@@ -1,0 +1,14 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/*
+!/.idea/codeStyles
+*.iml
+*.iws
+.attach_pid*
+
+# Mac
+.DS_Store
