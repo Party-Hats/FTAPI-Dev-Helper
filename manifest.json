@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Pull Request Button",
+  "version": "1.0",
+  "description": "Shows a popup button in GitHub, that opens matching Jenkins jobs.",
+
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/FTAPI-Software/Process-Client/pull/*"],
+      "js": ["github-button.js"]
+    },
+    {
+      "matches": [
+        "https://ci.ftapi.dev/view/Process%20Client/job/Process-Client/view/change-requests/job/PR-*",
+        "https://ci.ftapi.dev/view/Process%20Client/job/Process%20Client%20E2E%20Tests/view/change-requests/job/PR-*"
+      ],
+      "js": ["jenkins-check.js"]
+    }
+  ]
+}
