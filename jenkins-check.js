@@ -1,5 +1,6 @@
 (function() {
   const ERROR_TEXT = "This page may not exist, or you may not have permission to see it.";
+  const NO_BUILDS_TEXT = "No data available. This Pipeline has not yet run.";
   const CHECK_INTERVAL_MS = 3000;
 
   // Re-check every 3 seconds
@@ -11,6 +12,17 @@
     // See if any <p> contains the error text
     for (const p of pTags) {
       if (p.innerText.includes(ERROR_TEXT)) {
+        hasErrorMessage = true;
+        break;
+      }
+    }
+
+    // Find all <div> tags
+    const divTags = document.querySelectorAll('div');
+
+    // See if any <div> contains the no builds text
+    for (const div of divTags) {
+      if (div.innerText.includes(NO_BUILDS_TEXT)) {
         hasErrorMessage = true;
         break;
       }
