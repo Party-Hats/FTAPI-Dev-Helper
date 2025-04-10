@@ -1,0 +1,101 @@
+:root {
+  --main: #19853F;
+  --contrast: #00401E;
+  --light: #F3F5F4;
+  --dark: #333333;
+}
+
+/* Default theme: light background, dark text */
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: var(--light);
+  color: var(--dark);
+  font-family: sans-serif;
+  box-sizing: border-box;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* If user wants dark mode, we add .darkMode to body */
+body.darkMode {
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+#urlArea {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  text-align: center;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-weight: bold;
+  color: var(--main);
+}
+
+body.darkMode #urlArea {
+  color: #86f3ae; /* lighter green in dark mode */
+}
+
+#urlNote {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+}
+
+#statusArea {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+#offlineTime {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* Colors for server state */
+.statusUp {
+  color: var(--main);
+}
+
+.statusDown {
+  color: #ff4c4c;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+#autoToggle {
+  margin-right: 0.5rem;
+}
+
+button {
+  background-color: var(--main);
+  color: var(--light);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--contrast);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,20 +1,49 @@
 {
   "manifest_version": 3,
-  "name": "Pull Request Button",
+  "name": "FTAPI Dev Helper",
   "version": "1.0",
-  "description": "Shows a popup button in GitHub, that opens matching Jenkins jobs.",
-
+  "description": "Utility Extension for FTAPI development with different functionality",
+  "permissions": [
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "https://testing.ftapi.com:8443/*"
+  ],
+  "background": {
+    "service_worker": "SecuTransferErrorPage/background.js"
+  },
+  "action": {
+    "default_popup": "settings/popup.html"
+  },
   "content_scripts": [
     {
-      "matches": ["https://github.com/FTAPI-Software/Process-Client/pull/*"],
-      "js": ["github-button.js"]
+      "matches": [
+        "https://github.com/FTAPI-Software/*/pull/*"
+      ],
+      "js": [
+        "PullRequestButton/github-button.js"
+      ]
     },
     {
       "matches": [
-        "https://ci.ftapi.dev/view/Process%20Client/job/Process-Client/view/change-requests/job/PR-*",
-        "https://ci.ftapi.dev/view/Process%20Client/job/Process%20Client%20E2E%20Tests/view/change-requests/job/PR-*"
+        "https://ci.ftapi.dev/*"
       ],
-      "js": ["jenkins-check.js"]
+      "js": [
+        "PullRequestButton/jenkins-check.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "SecuTransferErrorPage/errorPage.html",
+        "SecuTransferErrorPage/errorPage.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
