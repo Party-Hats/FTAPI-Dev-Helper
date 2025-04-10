@@ -14,30 +14,39 @@
 
   function handleUrlChange(url) {
     chrome.storage.local.get(["githubButtonEnabled", "ghRepoMappings"], (items) => {
+      // If the GitHub button is disabled in settings, remove or skip injecting it
       if (!items.githubButtonEnabled) {
         removeExistingButton();
         return;
       }
       removeExistingButton();
 
-      // e.g. "https://github.com/FTAPI-Software/<repo>/pull/123"
-      const match = url.match(/FTAPI-Software\/([^/]+)\/pull\/(\d+)/);
+      // We want to match something like:
+      // https://github.com/FTAPI-Software/<repo>/pull/<number>
+      // Possibly with an optional trailing slash, but no extra path parts
+      // Regex explanation:
+      //   - "FTAPI-Software/" is literal
+      //   - "([^/]+)" captures the repo name
+      //   - "/pull/" is literal
+      //   - "(\d+)" captures the PR number
+      //   - "(?:/?)" optionally matches a trailing slash
+      //   - "$" ensures no further path segments
+      const match = url.match(/FTAPI-Software\/([^/]+)\/pull\/(\d+)(?:\/)?$/);
       if (!match) {
-        return;
+        return; // No exact match => no button
       }
+
       const repoName = match[1];
       const prNumber = match[2];
 
       const mappings = Array.isArray(items.ghRepoMappings) ? items.ghRepoMappings : [];
       const repoObj = mappings.find(r => r.repo === repoName);
       if (!repoObj || !repoObj.jobs || repoObj.jobs.length === 0) {
-        return;
+        return; // If no mappings or jobs => skip
       }
 
-      // Gather job names
+      // Build the button label, e.g.: "Open Jenkins Builds\n(Build, E2E)"
       const jobNames = repoObj.jobs.map(j => j.name || "Unnamed Job");
-      // Insert a newline after "Open Jenkins Builds"
-      // e.g. "Open Jenkins Builds\n(Build, E2E)"
       const buttonLabel = "Open Jenkins Builds\n(" + jobNames.join(", ") + ")";
 
       injectButton(prNumber, repoObj.jobs, buttonLabel);
@@ -67,12 +76,13 @@
     btn.style.cursor = "pointer";
     btn.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
 
-    // ~40 characters wide, word-wrap with newlines
+    // For multi-line display with wrapping
     btn.style.whiteSpace = "pre-wrap";
     btn.style.wordWrap = "break-word";
     btn.style.maxWidth = "40ch";
 
     btn.addEventListener("click", () => {
+      // Open each mapped job prefix + PR number in a new tab
       jobs.forEach(job => {
         const prefix = job.urlPrefix || "";
         const jobUrl = prefix + prNumber;
