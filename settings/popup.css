@@ -1,0 +1,188 @@
+/* Basic styles for popup.html */
+
+body {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font-family: sans-serif;
+  width: 360px;
+  box-sizing: border-box;
+  background-color: #F3F5F4;
+  color: #333333;
+}
+
+h1 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #19853F;
+}
+
+h2 {
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+  border-bottom: 1px solid #19853F;
+  padding-bottom: 0.2rem;
+  color: #19853F;
+}
+
+.settingsGroup {
+  margin-bottom: 1rem;
+}
+
+.inlineRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.inlineRow input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* We previously set max-width on all buttons; let's keep that
+   except for the reset button. */
+button {
+  cursor: pointer;
+  background-color: #19853F;
+  color: #F3F5F4;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 80px; /* default limit for most small buttons */
+}
+
+button:hover {
+  background-color: #00401E; /* Contrast on hover */
+}
+
+/* Exclude the resetMappingsBtn from forced max-width
+   so it can expand as needed */
+.resetMappingsBtn {
+  max-width: none;   /* no forced wrapping */
+  white-space: nowrap; /* keep text on one line */
+  margin-bottom: 0.5rem;
+}
+
+/* Text input used for the server URL, etc. */
+.settingsInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* Repos Mappings */
+#reposList {
+  margin-top: 0.5rem;
+}
+
+.repoContainer {
+  border: 1px solid #19853F;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #333333;
+  border-radius: 4px;
+}
+
+.repoHeader {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.repoHeader label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.repoInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.removeRepoRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.jobRow {
+  display: block;
+  border-left: 3px solid #19853F;
+  padding-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.jobRow label {
+  display: block;
+  margin: 0.25rem 0 0.25rem;
+  font-size: 0.9rem;
+}
+
+.jobRow input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.jobBtnRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.addJobRow {
+  display: block;
+  margin-left: 0.5rem;
+  border-left: 2px dashed #19853F;
+  padding-left: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.addJobRow input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.newRepoRow {
+  display: flex;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.newRepoRow input {
+  flex: 1;
+  margin-right: 0.5rem;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* The row at top for the reset button */
+.resetMappingTopRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+}

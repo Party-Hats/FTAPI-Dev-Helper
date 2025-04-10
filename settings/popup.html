@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Extension Settings</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+<h1>Extension Settings</h1>
+
+<!-- Group for Error Page toggles -->
+<div class="settingsGroup">
+  <h2>SecuTransfer Error Page</h2>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="errorPageToggle"
+        title="Toggle whether to show the custom error page instead of Chrome's default."
+    />
+    <label for="errorPageToggle">Enable Custom Error Page</label>
+  </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="autoReloadToggle"
+        title="If enabled, the error page automatically reloads once the server is back."
+    />
+    <label for="autoReloadToggle">Default Auto Reload</label>
+  </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="errorPageDarkMode"
+    />
+    <label for="errorPageDarkMode">Dark Mode</label>
+  </div>
+
+  <!-- Text field for the server URL -->
+  <label for="errorPageUrl">Error Page URL:</label>
+  <input
+      type="text"
+      id="errorPageUrl"
+      class="settingsInput"
+      placeholder="e.g. https://testing.ftapi.com:8443"
+      title="Enter the base URL for your server. The extension checks /actuator/health/readiness under this URL."
+  />
+</div>
+
+<!-- Group for GitHub Button toggle -->
+<div class="settingsGroup">
+  <h2>GitHub Jenkins Button</h2>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="githubButtonEnabled"
+        title="Toggle the GitHub button for opening Jenkins pipelines."
+    />
+    <label for="githubButtonEnabled">Enable GitHub Button</label>
+  </div>
+</div>
+
+<!-- Advanced GH->Jenkins mapping -->
+<div class="settingsGroup">
+  <h2>GitHub → Jenkins Mappings</h2>
+
+  <!-- Move the Reset button here, left-aligned, with no forced width -->
+  <div class="resetMappingTopRow">
+    <button
+        id="resetMappingsBtn"
+        class="resetMappingsBtn"
+        title="Reset GitHub→Jenkins mappings to the original defaults, discarding any changes."
+    >
+      Reset Default Mappings
+    </button>
+  </div>
+
+  <div id="reposList"></div>
+
+  <!-- Add new repo -->
+  <div class="newRepoRow">
+    <input
+        type="text"
+        id="newRepoName"
+        placeholder="Repo Name (e.g. Process-Client)"
+    />
+    <button
+        id="addRepoBtn"
+        title="Create a new repo entry with no jobs yet."
+    >
+      Add Repo
+    </button>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
