@@ -13,28 +13,18 @@
   }
 
   function handleUrlChange(url) {
-    chrome.storage.local.get(["githubButtonEnabled", "ghRepoMappings"], (items) => {
-      // If the GitHub button is disabled in settings, remove or skip injecting it
+    browser.storage.local.get(["githubButtonEnabled", "ghRepoMappings"], (items) => {
       if (!items.githubButtonEnabled) {
         removeExistingButton();
         return;
       }
       removeExistingButton();
 
-      // We want to match something like:
+      // Only show on the conversation page, e.g.:
       // https://github.com/FTAPI-Software/<repo>/pull/<number>
-      // Possibly with an optional trailing slash, but no extra path parts
-      // Regex explanation:
-      //   - "FTAPI-Software/" is literal
-      //   - "([^/]+)" captures the repo name
-      //   - "/pull/" is literal
-      //   - "(\d+)" captures the PR number
-      //   - "(?:/?)" optionally matches a trailing slash
-      //   - "$" ensures no further path segments
+      // with an optional trailing slash
       const match = url.match(/FTAPI-Software\/([^/]+)\/pull\/(\d+)(?:\/)?$/);
-      if (!match) {
-        return; // No exact match => no button
-      }
+      if (!match) return;
 
       const repoName = match[1];
       const prNumber = match[2];
@@ -42,10 +32,9 @@
       const mappings = Array.isArray(items.ghRepoMappings) ? items.ghRepoMappings : [];
       const repoObj = mappings.find(r => r.repo === repoName);
       if (!repoObj || !repoObj.jobs || repoObj.jobs.length === 0) {
-        return; // If no mappings or jobs => skip
+        return;
       }
 
-      // Build the button label, e.g.: "Open Jenkins Builds\n(Build, E2E)"
       const jobNames = repoObj.jobs.map(j => j.name || "Unnamed Job");
       const buttonLabel = "Open Jenkins Builds\n(" + jobNames.join(", ") + ")";
 
@@ -55,9 +44,7 @@
 
   function removeExistingButton() {
     const oldBtn = document.getElementById("my-jenkins-button");
-    if (oldBtn) {
-      oldBtn.remove();
-    }
+    if (oldBtn) oldBtn.remove();
   }
 
   function injectButton(prNumber, jobs, buttonLabel) {
@@ -76,13 +63,11 @@
     btn.style.cursor = "pointer";
     btn.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
 
-    // For multi-line display with wrapping
     btn.style.whiteSpace = "pre-wrap";
     btn.style.wordWrap = "break-word";
     btn.style.maxWidth = "40ch";
 
     btn.addEventListener("click", () => {
-      // Open each mapped job prefix + PR number in a new tab
       jobs.forEach(job => {
         const prefix = job.urlPrefix || "";
         const jobUrl = prefix + prNumber;

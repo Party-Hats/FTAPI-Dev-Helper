@@ -23,7 +23,7 @@ const originalUrl = urlParams.get("originalUrl") || "https://testing.ftapi.com:8
 urlArea.textContent = originalUrl;
 
 // Load user preferences
-chrome.storage.local.get(["autoReloadEnabled", "errorPageDarkMode", "errorPageUrl"], (items) => {
+browser.storage.local.get(["autoReloadEnabled", "errorPageDarkMode", "errorPageUrl"], (items) => {
   toggleEl.checked = !!items.autoReloadEnabled;
   if (items.errorPageDarkMode) {
     document.body.classList.add("darkMode");
@@ -39,7 +39,7 @@ chrome.storage.local.get(["autoReloadEnabled", "errorPageDarkMode", "errorPageUr
 
 // When user toggles, persist it
 toggleEl.addEventListener("change", () => {
-  chrome.storage.local.set({
+  browser.storage.local.set({
     autoReloadEnabled: toggleEl.checked
   });
 });

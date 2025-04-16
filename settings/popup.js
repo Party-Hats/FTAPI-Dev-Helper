@@ -47,7 +47,7 @@ function getDefaultMappings() {
 let ghRepoMappings = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-  chrome.storage.local.get([
+  browser.storage.local.get([
     "errorPageEnabled",
     "autoReloadEnabled",
     "errorPageDarkMode",
@@ -66,13 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
       errorPageUrlInput.value = items.errorPageUrl;
     } else {
       errorPageUrlInput.value = "https://testing.ftapi.com:8443";
-      chrome.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
+      browser.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
     }
 
     // GH Mappings
     if (!Array.isArray(items.ghRepoMappings)) {
       ghRepoMappings = getDefaultMappings();
-      chrome.storage.local.set({ ghRepoMappings });
+      browser.storage.local.set({ ghRepoMappings });
     } else {
       ghRepoMappings = items.ghRepoMappings;
     }
@@ -82,21 +82,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Toggle event listeners
   errorPageToggle.addEventListener("change", () => {
-    chrome.storage.local.set({ errorPageEnabled: errorPageToggle.checked });
+    browser.storage.local.set({ errorPageEnabled: errorPageToggle.checked });
   });
   autoReloadToggle.addEventListener("change", () => {
-    chrome.storage.local.set({ autoReloadEnabled: autoReloadToggle.checked });
+    browser.storage.local.set({ autoReloadEnabled: autoReloadToggle.checked });
   });
   errorPageDarkMode.addEventListener("change", () => {
-    chrome.storage.local.set({ errorPageDarkMode: errorPageDarkMode.checked });
+    browser.storage.local.set({ errorPageDarkMode: errorPageDarkMode.checked });
   });
   githubButtonEnabled.addEventListener("change", () => {
-    chrome.storage.local.set({ githubButtonEnabled: githubButtonEnabled.checked });
+    browser.storage.local.set({ githubButtonEnabled: githubButtonEnabled.checked });
   });
 
   // Error page URL
   errorPageUrlInput.addEventListener("change", () => {
-    chrome.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
+    browser.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
   });
 
   // Add a new repo
@@ -249,11 +249,11 @@ function renderRepoList() {
 }
 
 function saveAndRender() {
-  chrome.storage.local.set({ ghRepoMappings }, () => {
+  browser.storage.local.set({ ghRepoMappings }, () => {
     renderRepoList();
   });
 }
 
 function saveMappings() {
-  chrome.storage.local.set({ ghRepoMappings });
+  browser.storage.local.set({ ghRepoMappings });
 }
