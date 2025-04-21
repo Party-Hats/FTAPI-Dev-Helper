@@ -1,8 +1,15 @@
+// popup.js
+
 // Existing toggles
 const errorPageToggle = document.getElementById("errorPageToggle");
 const autoReloadToggle = document.getElementById("autoReloadToggle");
 const errorPageDarkMode = document.getElementById("errorPageDarkMode");
 const githubButtonEnabled = document.getElementById("githubButtonEnabled");
+
+// Dev Password Saver
+const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
+const managePasswordsBtn = document.getElementById("managePasswordsBtn");
+const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
 
 // Error page URL input
 const errorPageUrlInput = document.getElementById("errorPageUrl");
@@ -13,6 +20,7 @@ const newRepoName = document.getElementById("newRepoName");
 const addRepoBtn = document.getElementById("addRepoBtn");
 const resetMappingsBtn = document.getElementById("resetMappingsBtn");
 
+// Reuse your existing getDefaultMappings for GH stuff if needed
 function getDefaultMappings() {
   return [
     {
@@ -53,13 +61,28 @@ document.addEventListener("DOMContentLoaded", () => {
     "errorPageDarkMode",
     "errorPageUrl",
     "githubButtonEnabled",
+    "passwordSaverEnabled",
+    "passwordSaverDarkMode",
     "ghRepoMappings"
   ], (items) => {
-    // Set toggles
+    // Error page toggles
     errorPageToggle.checked = items.errorPageEnabled !== false;
     autoReloadToggle.checked = !!items.autoReloadEnabled;
     errorPageDarkMode.checked = !!items.errorPageDarkMode;
     githubButtonEnabled.checked = items.githubButtonEnabled !== false;
+
+    // Dev Password Saver default to true if not set
+    if (items.passwordSaverEnabled === undefined) {
+      passwordSaverEnabled.checked = true; // default on
+      browser.storage.local.set({ passwordSaverEnabled: true });
+    } else {
+      passwordSaverEnabled.checked = !!items.passwordSaverEnabled;
+    }
+
+    // Password Saver Dark Mode - load from sync storage
+    browser.storage.sync.get(["passwordSaverDarkMode"], (syncItems) => {
+      passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
+    });
 
     // Error Page URL
     if (typeof items.errorPageUrl === "string") {
@@ -93,8 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
   githubButtonEnabled.addEventListener("change", () => {
     browser.storage.local.set({ githubButtonEnabled: githubButtonEnabled.checked });
   });
-
-  // Error page URL
+  passwordSaverEnabled.addEventListener("change", () => {
+    browser.storage.local.set({ passwordSaverEnabled: passwordSaverEnabled.checked });
+  });
   errorPageUrlInput.addEventListener("change", () => {
     browser.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
   });
@@ -112,6 +136,17 @@ document.addEventListener("DOMContentLoaded", () => {
   resetMappingsBtn.addEventListener("click", () => {
     ghRepoMappings = getDefaultMappings();
     saveAndRender();
+  });
+
+  // Open our password management page
+  managePasswordsBtn.addEventListener("click", () => {
+    const url = browser.runtime.getURL("PasswordSaver/passwords.html");
+    browser.tabs.create({ url });
+  });
+
+  // Add dark mode toggle listener
+  passwordSaverDarkMode.addEventListener("change", () => {
+    browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
   });
 });
 
@@ -155,6 +190,7 @@ function renderRepoList() {
     header.appendChild(removeRepoRow);
     container.appendChild(header);
 
+    // Jobs
     repoObj.jobs.forEach((job, jobIndex) => {
       const jobDiv = document.createElement("div");
       jobDiv.className = "jobRow";
@@ -203,7 +239,7 @@ function renderRepoList() {
       container.appendChild(jobDiv);
     });
 
-    // "Add job" row
+    // Add job row
     const addJobDiv = document.createElement("div");
     addJobDiv.className = "addJobRow";
 
