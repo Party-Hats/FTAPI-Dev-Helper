@@ -1,8 +1,8 @@
 {
+  "manifest_version": 3,
   "name": "FTAPI Dev Helper",
   "version": "1.1",
-  "description": "Utility extension for FTAPI development with different functionality",
-  "manifest_version": 3,
+
   "permissions": [
     "storage",
     "tabs",
@@ -21,6 +21,18 @@
   },
 
   "content_scripts": [
+    {
+      "matches": [
+        "https://testing.ftapi.com:8443/*"
+      ],
+      "js": [
+        "shared/polyfill.js",
+        "PasswordSaver/passwordSaverContent.js"
+      ],
+      "css": [
+        "PasswordSaver/passwordSaverContent.css"
+      ]
+    },
     {
       "matches": [
         "https://github.com/FTAPI-Software/*/pull/*"
@@ -47,9 +59,13 @@
         "shared/polyfill.js",
         "SecuTransferErrorPage/errorPage.html",
         "SecuTransferErrorPage/errorPage.js",
-        "SecuTransferErrorPage/errorPage.css"
+        "SecuTransferErrorPage/errorPage.css",
+        "PasswordSaver/passwordSaverContent.css",
+        "PasswordSaver/passwords.html",
+        "PasswordSaver/passwords.css",
+        "PasswordSaver/passwords.js"
       ],
-      "matches": [ "<all_urls>" ]
+      "matches": ["<all_urls>"]
     }
   ]
 }

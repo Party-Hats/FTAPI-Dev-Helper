@@ -46,6 +46,32 @@
   />
 </div>
 
+<!-- New Dev Password Saver setting -->
+<div class="settingsGroup">
+  <h2>Dev Password Saver</h2>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="passwordSaverEnabled"
+        title="Toggle the password saver feature."
+    />
+    <label for="passwordSaverEnabled">Enable Password Saver</label>
+  </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="passwordSaverDarkMode"
+        title="Toggle dark mode for the password saver popup."
+    />
+    <label for="passwordSaverDarkMode">Dark Mode</label>
+  </div>
+  <button
+      id="managePasswordsBtn"
+      class="resetMappingsBtn">
+  Manage Saved Passwords
+  </button>
+</div>
+
 <!-- Group for GitHub Button toggle -->
 <div class="settingsGroup">
   <h2>GitHub Jenkins Button</h2>
@@ -59,11 +85,9 @@
   </div>
 </div>
 
-<!-- Advanced GH->Jenkins mapping -->
+<!-- GitHub Jenkins Mappings -->
 <div class="settingsGroup">
   <h2>GitHub → Jenkins Mappings</h2>
-
-  <!-- Move the Reset button here, left-aligned, with no forced width -->
   <div class="resetMappingTopRow">
     <button
         id="resetMappingsBtn"
@@ -73,10 +97,7 @@
       Reset Default Mappings
     </button>
   </div>
-
   <div id="reposList"></div>
-
-  <!-- Add new repo -->
   <div class="newRepoRow">
     <input
         type="text"
