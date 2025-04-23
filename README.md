@@ -27,11 +27,51 @@ This feature allows you to quickly open all related Jenkins builds from a GitHub
 
 ## How to Install
 
+### From GitHub Releases (Recommended)
+
+1. Go to the [Releases](https://github.com/derwild/FTAPI-Dev-Helper/releases) page
+2. Download the latest version for your browser:
+   - Chrome: `ftapi-dev-helper-chrome-x.x.x.zip`
+   - Firefox: `ftapi-dev-helper-firefox-x.x.x.zip`
+3. **For Chrome**:
+   - Navigate to `chrome://extensions/`
+   - Enable Developer Mode (toggle in top-right)
+   - Drag and drop the downloaded ZIP file onto the page
+4. **For Firefox**:
+   - Navigate to `about:addons`
+   - Click the gear icon and select "Install Add-on From File..."
+   - Select the downloaded ZIP file
+
+### From Source Code
+
 1. **Obtain the code**: Clone this repository or download it as a ZIP and extract it.
-2. **Open Chrome’s Extensions Page**: Navigate to`chrome://extensions/` in your browser.
-3. **Enable Developer Mode**: Use the toggle in the top-right corner.
-4. **Load the Extension**: Click **Load unpacked** and select the folder where you placed the extension files.
-5. **Reload When Needed**: If you update the code (e.g., by pulling the latest changes), go back to `chrome://extensions/` and click **Reload**on this extension.
+2. **Open Browser Extensions Page**:
+   - Chrome: Navigate to `chrome://extensions/`
+   - Firefox: Navigate to `about:debugging#/runtime/this-firefox`
+3. **Enable Developer Mode**:
+   - Chrome: Use the toggle in the top-right corner
+   - Firefox: Already in developer mode when using about:debugging
+4. **Load the Extension**:
+   - Chrome: Click **Load unpacked** and select the folder
+   - Firefox: Click **Load Temporary Add-on** and select any file in the folder
+5. **Reload When Needed**: If you update the code, reload the extension in your browser.
+
+## Development and Releases
+
+This extension uses GitHub Actions for automated builds and releases:
+
+1. When a tag starting with "v" (e.g., v1.2.3) is pushed, GitHub Actions will:
+   - Build both Chrome and Firefox versions of the extension
+   - Create a GitHub Release with the packaged extensions
+   - Upload the extensions as release assets
+
+To create a new release:
+
+1. Create and push a tag with the desired version: `git tag vx.x.x && git push origin vx.x.x`
+2. GitHub Actions will automatically:
+   - Update the version in `manifest.json`
+   - Commit and push the changes back to the repository
+   - Build and publish the release with the new version
 
 ---
 
