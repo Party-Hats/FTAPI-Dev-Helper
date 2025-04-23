@@ -1,15 +1,12 @@
 name: Build and Release Extensions
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - master
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
-    # Only run if the PR was merged (not just closed) and the PR title contains "Bump version to"
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.title, 'Bump version to')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,11 +14,11 @@ jobs:
         with:
           ref: master
 
-      - name: Extract version from PR title
+      - name: Extract version from tag
         id: get_version
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          VERSION=$(echo $PR_TITLE | sed -n 's/Bump version to \(.*\)/\1/p')
+          TAG_NAME="${{ github.ref_name }}"
+          VERSION=${TAG_NAME#v}
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up Node.js

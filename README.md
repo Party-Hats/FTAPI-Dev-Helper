@@ -60,18 +60,17 @@ This feature allows you to quickly open all related Jenkins builds from a GitHub
 
 This extension uses GitHub Actions for automated builds and releases:
 
-1. When a tag starting with "v" (e.g., v1.2.3) is pushed, GitHub Actions will:
-   - Build both Chrome and Firefox versions of the extension
-   - Create a GitHub Release with the packaged extensions
-   - Upload the extensions as release assets
+The release process works as follows:
+
+1. When a tag with the format "v*" is pushed:
+   - The release workflow is triggered
+   - Builds both Chrome and Firefox versions of the extension
+   - Creates a GitHub Release with the packaged extensions
+   - Uploads the extensions as release assets
 
 To create a new release:
-
-1. Create and push a tag with the desired version: `git tag vx.x.x && git push origin vx.x.x`
-2. GitHub Actions will automatically:
-   - Update the version in `manifest.json`
-   - Commit and push the changes back to the repository
-   - Build and publish the release with the new version
+1. Update the version in `manifest.json`
+2. Create and push a tag with the format "v{version}": `git tag v{version} && git push origin v{version}`
 
 ---
 
