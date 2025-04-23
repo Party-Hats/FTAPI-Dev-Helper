@@ -1,0 +1,63 @@
+name: Create PR for Version Update
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-version-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Get tag creator
+        id: get_tag_creator
+        run: |
+          TAG_CREATOR=$(git log -1 --format='%an' ${{ github.ref }})
+          TAG_CREATOR_EMAIL=$(git log -1 --format='%ae' ${{ github.ref }})
+          echo "TAG_CREATOR=$TAG_CREATOR" >> $GITHUB_OUTPUT
+          echo "TAG_CREATOR_EMAIL=$TAG_CREATOR_EMAIL" >> $GITHUB_OUTPUT
+
+      - name: Create branch for version update
+        run: |
+          git checkout -b version-update-${{ steps.get_version.outputs.VERSION }}
+
+      - name: Update manifest version
+        run: |
+          sed -i 's/"version": "[^"]*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' manifest.json
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit changes
+        run: |
+          git add manifest.json
+          git commit -m "Bump version to ${{ steps.get_version.outputs.VERSION }}"
+          git push origin version-update-${{ steps.get_version.outputs.VERSION }}
+
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Bump version to ${{ steps.get_version.outputs.VERSION }}
+          branch: version-update-${{ steps.get_version.outputs.VERSION }}
+          title: "Bump version to ${{ steps.get_version.outputs.VERSION }}"
+          body: |
+            This PR updates the manifest version to ${{ steps.get_version.outputs.VERSION }}.
+            Created automatically from tag ${{ github.ref }}.
+          assignees: ${{ steps.get_tag_creator.outputs.TAG_CREATOR }}
