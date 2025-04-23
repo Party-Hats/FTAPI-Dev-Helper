@@ -56,6 +56,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Bump version to ${{ steps.get_version.outputs.VERSION }}
           branch: version-update-${{ steps.get_version.outputs.VERSION }}
+          base: master
           title: "Bump version to ${{ steps.get_version.outputs.VERSION }}"
           body: |
             This PR updates the manifest version to ${{ steps.get_version.outputs.VERSION }}.
