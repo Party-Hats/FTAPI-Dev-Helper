@@ -72,6 +72,24 @@ This feature automatically closes specific browser tabs after a few seconds:
    - Firefox: Click **Load Temporary Add-on** and select any file in the folder
 5. **Reload When Needed**: If you update the code, reload the extension in your browser.
 
+### Configuration Requirements
+
+> **Important**: This project should NEVER have FTAPI-specific URLs in the code.
+
+When you first install the extension, you'll be prompted to provide configuration values:
+
+1. **Jenkins URL**: The base URL for your Jenkins instance
+2. **Jenkins Mappings**: JSON configuration for mapping GitHub repositories to Jenkins jobs
+3. **Auto-Close URLs**: List of URL patterns that should be automatically closed
+
+These values must be provided during the installation process. To make it easier:
+
+1. Look in the FTAPI wiki and search for "FTAPI Dev Helper Browser Extension"
+2. You'll find a complete JSON configuration with sensible default values
+3. Use the "Import from JSON" button on the setup page to import these values
+
+This approach ensures that sensitive URLs and configurations are not hardcoded in the extension.
+
 ## Development and Releases
 
 This extension uses GitHub Actions for automated builds and releases:
