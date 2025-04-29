@@ -11,30 +11,35 @@ const reloadBtn = document.getElementById("reloadBtn");
 const offlineTimeEl = document.getElementById("offlineTime");
 const offlineCountEl = document.getElementById("offlineCount");
 
-// We'll store these after we load from storage
-let baseUrl = "https://testing.ftapi.com:8443"; // fallback
-let statusEndpoint = baseUrl + "/actuator/health/readiness";
-
 // Original failing URL
 const urlParams = new URLSearchParams(window.location.search);
-const originalUrl = urlParams.get("originalUrl") || "https://testing.ftapi.com:8443";
+const originalUrl = urlParams.get("originalUrl") || "";
 
 // Display the original URL distinctly
 urlArea.textContent = originalUrl;
 
+// Extract the base URL from the original URL (up to the first path segment)
+let baseUrl = "";
+let statusEndpoint = "";
+
+if (originalUrl) {
+  try {
+    const url = new URL(originalUrl);
+    baseUrl = url.origin;
+    statusEndpoint = baseUrl + "/actuator/health/readiness";
+  } catch (e) {
+    console.error("Invalid URL:", originalUrl);
+  }
+}
+
 // Load user preferences
-browser.storage.local.get(["autoReloadEnabled", "errorPageDarkMode", "errorPageUrl"], (items) => {
+browser.storage.local.get(["autoReloadEnabled", "errorPageDarkMode"], (items) => {
   toggleEl.checked = !!items.autoReloadEnabled;
   if (items.errorPageDarkMode) {
     document.body.classList.add("darkMode");
   } else {
     document.body.classList.remove("darkMode");
   }
-  if (typeof items.errorPageUrl === "string" && items.errorPageUrl.trim() !== "") {
-    baseUrl = items.errorPageUrl.trim();
-  }
-  // Rebuild the endpoint
-  statusEndpoint = baseUrl.replace(/\/+$/, "") + "/actuator/health/readiness";
 });
 
 // When user toggles, persist it

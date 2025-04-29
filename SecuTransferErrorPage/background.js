@@ -11,10 +11,13 @@ browser.webNavigation.onErrorOccurred.addListener((details) => {
   browser.storage.local.get(["errorPageEnabled"], (items) => {
     const isEnabled = items.errorPageEnabled !== false;
 
+    // Check if the URL is from any ftapi.com domain
+    const isFtapiDomain = details.url.match(/^https:\/\/[^\/]*\.ftapi\.com/);
+
     if (
         isEnabled &&
         details.error === "net::ERR_CONNECTION_REFUSED" &&
-        details.url.startsWith("https://testing.ftapi.com:8443")
+        isFtapiDomain
     ) {
       browser.tabs.update(details.tabId, {
         url: browser.runtime.getURL("SecuTransferErrorPage/errorPage.html")

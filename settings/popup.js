@@ -11,9 +11,6 @@ const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
 const managePasswordsBtn = document.getElementById("managePasswordsBtn");
 const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
 
-// Error page URL input
-const errorPageUrlInput = document.getElementById("errorPageUrl");
-
 // GH->Jenkins mappings controls
 const reposList = document.getElementById("reposList");
 const newRepoName = document.getElementById("newRepoName");
@@ -33,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "errorPageEnabled",
     "autoReloadEnabled",
     "errorPageDarkMode",
-    "errorPageUrl",
     "githubButtonEnabled",
     "passwordSaverEnabled",
     "passwordSaverDarkMode",
@@ -58,13 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
       passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
     });
 
-    // Error Page URL
-    if (typeof items.errorPageUrl === "string") {
-      errorPageUrlInput.value = items.errorPageUrl;
-    } else {
-      errorPageUrlInput.value = "https://testing.ftapi.com:8443";
-      browser.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
-    }
 
     // GH Mappings
     if (!Array.isArray(items.ghRepoMappings)) {
@@ -92,9 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   passwordSaverEnabled.addEventListener("change", () => {
     browser.storage.local.set({ passwordSaverEnabled: passwordSaverEnabled.checked });
-  });
-  errorPageUrlInput.addEventListener("change", () => {
-    browser.storage.local.set({ errorPageUrl: errorPageUrlInput.value });
   });
 
   // Add a new repo

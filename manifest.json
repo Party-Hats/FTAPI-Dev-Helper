@@ -9,7 +9,7 @@
     "webNavigation"
   ],
   "host_permissions": [
-    "https://testing.ftapi.com:8443/*"
+    "https://*.ftapi.com/*"
   ],
 
   "background": {
@@ -21,6 +21,15 @@
   },
 
   "content_scripts": [
+    {
+      "matches": [
+        "https://*.ftapi.com/*"
+      ],
+      "js": [
+        "shared/polyfill.js",
+        "SecuTransferErrorPage/unavailableDetector.js"
+      ]
+    },
     {
       "matches": [
         "https://testing.ftapi.com:8443/*"
@@ -60,6 +69,7 @@
         "SecuTransferErrorPage/errorPage.html",
         "SecuTransferErrorPage/errorPage.js",
         "SecuTransferErrorPage/errorPage.css",
+        "SecuTransferErrorPage/unavailableDetector.js",
         "PasswordSaver/passwordSaverContent.css",
         "PasswordSaver/passwords.html",
         "PasswordSaver/passwords.css",
