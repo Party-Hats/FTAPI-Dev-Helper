@@ -25,6 +25,7 @@
     {
       "resources": [
         "shared/polyfill.js",
+        "shared/utils.js",
         "SecuTransferErrorPage/errorPage.html",
         "SecuTransferErrorPage/errorPage.js",
         "SecuTransferErrorPage/errorPage.css",

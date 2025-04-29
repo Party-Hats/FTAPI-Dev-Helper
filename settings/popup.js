@@ -1,44 +1,67 @@
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
+/**
+ * Settings popup script for the FTAPI Dev Helper extension
+ * Handles UI interactions and configuration management
+ */
 
+// UI element references
+// Error page settings
 const errorPageToggle = document.getElementById("errorPageToggle");
 const autoReloadToggle = document.getElementById("autoReloadToggle");
 const errorPageDarkMode = document.getElementById("errorPageDarkMode");
+
+// GitHub button settings
 const githubButtonEnabled = document.getElementById("githubButtonEnabled");
 const jenkinsUrlInput = document.getElementById("jenkinsUrl");
 const saveJenkinsUrlBtn = document.getElementById("saveJenkinsUrlBtn");
 
+// Password saver settings
 const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
 const managePasswordsBtn = document.getElementById("managePasswordsBtn");
 const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
 
+// Auto-close tabs settings
 const autoCloseEnabled = document.getElementById("autoCloseEnabled");
 const autoCloseDelay = document.getElementById("autoCloseDelay");
 const saveAutoCloseDelayBtn = document.getElementById("saveAutoCloseDelayBtn");
 const autoCloseUrls = document.getElementById("autoCloseUrls");
 const saveAutoCloseUrlsBtn = document.getElementById("saveAutoCloseUrlsBtn");
 
+// Repository mappings
 const reposList = document.getElementById("reposList");
 const newRepoName = document.getElementById("newRepoName");
 const addRepoBtn = document.getElementById("addRepoBtn");
 const resetMappingsBtn = document.getElementById("resetMappingsBtn");
+
+// Global settings
 const viewConfigBtn = document.getElementById("viewConfigBtn");
 const resetAllBtn = document.getElementById("resetAllBtn");
 
+/**
+ * Returns the default repository mappings
+ * @returns {Array} Empty array as default mappings
+ */
 function getDefaultMappings() {
   return [];
 }
 
+/**
+ * Gets the Jenkins URL from storage
+ * @param {Function} callback - Function to call with the Jenkins URL
+ */
 function getJenkinsUrl(callback) {
   browser.storage.local.get(["jenkinsUrl"], (items) => {
     callback(items.jenkinsUrl || "");
   });
 }
 
+// Global repository mappings
 let ghRepoMappings = [];
 
+/**
+ * Initialize the settings page when the DOM is loaded
+ */
 document.addEventListener("DOMContentLoaded", () => {
+  // Load all settings from storage
   browser.storage.local.get([
     "errorPageEnabled",
     "autoReloadEnabled",
@@ -52,11 +75,16 @@ document.addEventListener("DOMContentLoaded", () => {
     "autoCloseDelay",
     "autoCloseUrls"
   ], (items) => {
+    // Initialize error page settings
     errorPageToggle.checked = items.errorPageEnabled !== false;
     autoReloadToggle.checked = !!items.autoReloadEnabled;
     errorPageDarkMode.checked = !!items.errorPageDarkMode;
-    githubButtonEnabled.checked = items.githubButtonEnabled !== false;
 
+    // Initialize GitHub button settings
+    githubButtonEnabled.checked = items.githubButtonEnabled !== false;
+    jenkinsUrlInput.value = items.jenkinsUrl || "";
+
+    // Initialize password saver settings
     if (items.passwordSaverEnabled === undefined) {
       passwordSaverEnabled.checked = true;
       browser.storage.local.set({ passwordSaverEnabled: true });
@@ -68,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
       passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
     });
 
-    // Auto-close tabs settings
+    // Initialize auto-close tabs settings
     if (items.autoCloseEnabled === undefined) {
       autoCloseEnabled.checked = true;
       browser.storage.local.set({ autoCloseEnabled: true });
@@ -84,8 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       autoCloseUrls.value = '';
     }
 
-    jenkinsUrlInput.value = items.jenkinsUrl || "";
-
+    // Initialize repository mappings
     if (!Array.isArray(items.ghRepoMappings)) {
       ghRepoMappings = getDefaultMappings();
       browser.storage.local.set({ ghRepoMappings });
@@ -96,22 +123,39 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRepoList();
   });
 
+  // Set up event listeners for error page settings
   errorPageToggle.addEventListener("change", () => {
     browser.storage.local.set({ errorPageEnabled: errorPageToggle.checked });
   });
+
   autoReloadToggle.addEventListener("change", () => {
     browser.storage.local.set({ autoReloadEnabled: autoReloadToggle.checked });
   });
+
   errorPageDarkMode.addEventListener("change", () => {
     browser.storage.local.set({ errorPageDarkMode: errorPageDarkMode.checked });
   });
+
+  // Set up event listeners for GitHub button settings
   githubButtonEnabled.addEventListener("change", () => {
     browser.storage.local.set({ githubButtonEnabled: githubButtonEnabled.checked });
   });
+
+  // Set up event listeners for password saver settings
   passwordSaverEnabled.addEventListener("change", () => {
     browser.storage.local.set({ passwordSaverEnabled: passwordSaverEnabled.checked });
   });
 
+  passwordSaverDarkMode.addEventListener("change", () => {
+    browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
+  });
+
+  managePasswordsBtn.addEventListener("click", () => {
+    const url = browser.runtime.getURL("PasswordSaver/passwords.html");
+    browser.tabs.create({ url });
+  });
+
+  // Set up event listeners for repository mappings
   addRepoBtn.addEventListener("click", () => {
     const repoName = newRepoName.value.trim();
     if (!repoName) return;
@@ -125,16 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveAndRender();
   });
 
-  managePasswordsBtn.addEventListener("click", () => {
-    const url = browser.runtime.getURL("PasswordSaver/passwords.html");
-    browser.tabs.create({ url });
-  });
-
-  passwordSaverDarkMode.addEventListener("change", () => {
-    browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
-  });
-
-  // Auto-close tabs event listeners
+  // Set up event listeners for auto-close tabs settings
   autoCloseEnabled.addEventListener("change", () => {
     browser.storage.local.set({ autoCloseEnabled: autoCloseEnabled.checked });
   });
@@ -150,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     browser.storage.local.set({ autoCloseUrls: urlsArray });
   });
 
+  // Set up event listeners for global settings
   viewConfigBtn.addEventListener("click", () => {
     const url = browser.runtime.getURL("settings/config-values.html");
     browser.tabs.create({ url });
@@ -157,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resetAllBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to reset all configurations to default values? This cannot be undone.")) {
-      // Reset all configurations to default values
       const defaultSettings = {
         errorPageEnabled: true,
         autoReloadEnabled: false,
@@ -171,34 +206,17 @@ document.addEventListener("DOMContentLoaded", () => {
         autoCloseUrls: []
       };
 
-      // Save default settings to local storage
       browser.storage.local.set(defaultSettings, () => {
-        // Reset password saver dark mode in sync storage
         browser.storage.sync.set({ passwordSaverDarkMode: false }, () => {
-          // Open the install page
           const installUrl = browser.runtime.getURL("install/install.html");
           browser.tabs.create({ url: installUrl });
-          // Close the popup
           window.close();
         });
       });
     }
   });
 
-  function sanitizeJenkinsUrl(url) {
-    let sanitizedUrl = url.trim();
-
-    while (sanitizedUrl.endsWith('/')) {
-      sanitizedUrl = sanitizedUrl.slice(0, -1);
-    }
-
-    if (sanitizedUrl && !sanitizedUrl.match(/^https?:\/\//)) {
-      sanitizedUrl = 'https://' + sanitizedUrl;
-    }
-
-    return sanitizedUrl;
-  }
-
+  // Set up Jenkins URL save button
   saveJenkinsUrlBtn.addEventListener("click", () => {
     const jenkinsUrl = sanitizeJenkinsUrl(jenkinsUrlInput.value);
     if (jenkinsUrl) {
@@ -209,6 +227,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+/**
+ * Renders the repository list UI based on the current ghRepoMappings
+ */
 function renderRepoList() {
   reposList.innerHTML = "";
 
@@ -216,6 +237,7 @@ function renderRepoList() {
     const container = document.createElement("div");
     container.className = "repoContainer";
 
+    // Create repository header
     const header = document.createElement("div");
     header.className = "repoHeader";
 
@@ -249,7 +271,7 @@ function renderRepoList() {
     header.appendChild(removeRepoRow);
     container.appendChild(header);
 
-    // Jobs
+    // Create job rows for each job in the repository
     repoObj.jobs.forEach((job, jobIndex) => {
       const jobDiv = document.createElement("div");
       jobDiv.className = "jobRow";
@@ -298,7 +320,7 @@ function renderRepoList() {
       container.appendChild(jobDiv);
     });
 
-    // Add job row
+    // Create add job row
     const addJobDiv = document.createElement("div");
     addJobDiv.className = "addJobRow";
 
@@ -343,12 +365,18 @@ function renderRepoList() {
   });
 }
 
+/**
+ * Saves repository mappings to storage and re-renders the UI
+ */
 function saveAndRender() {
   browser.storage.local.set({ ghRepoMappings }, () => {
     renderRepoList();
   });
 }
 
+/**
+ * Saves repository mappings to storage without re-rendering
+ */
 function saveMappings() {
   browser.storage.local.set({ ghRepoMappings });
 }

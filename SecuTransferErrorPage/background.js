@@ -1,15 +1,15 @@
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
+/**
+ * SecuTransfer Error Page background script
+ * Handles installation, startup, and error detection
+ */
 
-browser.runtime.onInstalled.addListener((details) => {
-  checkSetupStatus();
-});
+// Check setup status on install and startup
+browser.runtime.onInstalled.addListener(checkSetupStatus);
+browser.runtime.onStartup.addListener(checkSetupStatus);
 
-browser.runtime.onStartup.addListener(() => {
-  checkSetupStatus();
-});
-
+/**
+ * Checks if the extension setup is completed and opens the install page if not
+ */
 function checkSetupStatus() {
   browser.storage.local.get(["setupCompleted", "jenkinsUrl"], (items) => {
     if (!items.setupCompleted || !items.jenkinsUrl) {
@@ -20,6 +20,9 @@ function checkSetupStatus() {
   });
 }
 
+/**
+ * Listens for connection errors to FTAPI domains and shows a custom error page
+ */
 browser.webNavigation.onErrorOccurred.addListener((details) => {
   browser.storage.local.get(["errorPageEnabled"], (items) => {
     const isEnabled = items.errorPageEnabled !== false;

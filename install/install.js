@@ -1,63 +1,31 @@
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
+/**
+ * Installation script for the FTAPI Dev Helper extension
+ * Handles setup of extension configuration
+ */
 
-function sanitizeJenkinsUrl(url) {
-  let sanitizedUrl = url.trim();
+// Import utility functions from shared/utils.js
+// These functions are already available in the global scope
 
-  while (sanitizedUrl.endsWith('/')) {
-    sanitizedUrl = sanitizedUrl.slice(0, -1);
-  }
-
-  if (sanitizedUrl && !sanitizedUrl.match(/^https?:\/\//)) {
-    sanitizedUrl = 'https://' + sanitizedUrl;
-  }
-
-  return sanitizedUrl;
-}
-
-function preprocessJson(jsonString) {
-  let processed = jsonString.trim();
-
-  processed = processed.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-  processed = processed.replace(/'([^'\\]*(\\.[^'\\]*)*?)'/g, '"$1"');
-
-  try {
-    JSON.parse(processed);
-    return processed;
-  } catch (e) {
-    console.log("First preprocessing attempt failed, trying more aggressive approach");
-
-    try {
-      // eslint-disable-next-line no-eval
-      const obj = eval('(' + jsonString + ')');
-      return JSON.stringify(obj);
-    } catch (evalError) {
-      console.error("Failed to preprocess JSON:", evalError);
-      return processed;
-    }
-  }
-}
-
-// Function to validate the imported JSON configuration
+/**
+ * Validates the imported JSON configuration
+ * @param {Object} config - The configuration object to validate
+ * @returns {boolean} True if the configuration is valid
+ * @throws {Error} If the configuration is invalid
+ */
 function validateConfigJson(config) {
-  // Check if config is an object
   if (typeof config !== 'object' || config === null) {
     throw new Error("Configuration must be a valid JSON object");
   }
 
-  // Validate Jenkins URL if present
   if (config.jenkinsUrl !== undefined && typeof config.jenkinsUrl !== 'string') {
     throw new Error("jenkinsUrl must be a string");
   }
 
-  // Validate GitHub repo mappings if present
   if (config.ghRepoMappings !== undefined) {
     if (!Array.isArray(config.ghRepoMappings)) {
       throw new Error("ghRepoMappings must be an array");
     }
 
-    // Validate each mapping
     config.ghRepoMappings.forEach((mapping, index) => {
       if (!mapping.repo) {
         throw new Error(`Mapping at index ${index} must have a 'repo' property`);
@@ -68,13 +36,11 @@ function validateConfigJson(config) {
     });
   }
 
-  // Validate auto-close URLs if present
   if (config.autoCloseUrls !== undefined) {
     if (!Array.isArray(config.autoCloseUrls)) {
       throw new Error("autoCloseUrls must be an array");
     }
 
-    // Validate each URL pattern
     config.autoCloseUrls.forEach((pattern, index) => {
       if (typeof pattern !== 'string') {
         throw new Error(`URL pattern at index ${index} must be a string`);
@@ -82,14 +48,12 @@ function validateConfigJson(config) {
     });
   }
 
-  // Validate auto-close delay if present
   if (config.autoCloseDelay !== undefined) {
     if (typeof config.autoCloseDelay !== 'number' || config.autoCloseDelay < 0) {
       throw new Error("autoCloseDelay must be a positive number");
     }
   }
 
-  // Validate boolean values
   const booleanProps = [
     'errorPageEnabled', 
     'autoReloadEnabled', 
@@ -109,6 +73,9 @@ function validateConfigJson(config) {
   return true;
 }
 
+/**
+ * Initialize the installation page when the DOM is loaded
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const setupForm = document.getElementById("setupForm");
   const jenkinsUrlInput = document.getElementById("jenkinsUrl");
@@ -126,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModalButton = document.querySelector(".close");
   const modalErrorMessage = document.getElementById("modalErrorMessage");
 
-  // Load existing values
+  // Load existing configuration values
   browser.storage.local.get(["jenkinsUrl", "ghRepoMappings", "autoCloseUrls", "autoCloseDelay", "autoCloseEnabled"], (items) => {
     if (items.jenkinsUrl) {
       jenkinsUrlInput.value = items.jenkinsUrl;
@@ -145,31 +112,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Open modal when Import from JSON button is clicked
+  // Set up modal event listeners
   importJsonButton.addEventListener("click", () => {
     importJsonModal.style.display = "block";
     importJsonText.value = "";
     modalErrorMessage.textContent = "";
   });
 
-  // Close modal when X is clicked
   closeModalButton.addEventListener("click", () => {
     importJsonModal.style.display = "none";
   });
 
-  // Close modal when Cancel button is clicked
   cancelImportButton.addEventListener("click", () => {
     importJsonModal.style.display = "none";
   });
 
-  // Close modal when clicking outside of it
   window.addEventListener("click", (event) => {
     if (event.target === importJsonModal) {
       importJsonModal.style.display = "none";
     }
   });
 
-  // Handle import confirmation
+  /**
+   * Handle JSON configuration import
+   */
   confirmImportButton.addEventListener("click", () => {
     modalErrorMessage.textContent = "";
 
@@ -179,14 +145,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Preprocess and parse the JSON
       const preprocessedJson = preprocessJson(importJsonText.value);
       const config = JSON.parse(preprocessedJson);
-
-      // Validate the configuration
       validateConfigJson(config);
 
-      // Update form fields with imported values (visible on the install page)
+      // Update visible form fields
       if (config.jenkinsUrl !== undefined) {
         jenkinsUrlInput.value = config.jenkinsUrl;
       }
@@ -203,10 +166,8 @@ document.addEventListener("DOMContentLoaded", () => {
         autoCloseDelayInput.value = config.autoCloseDelay;
       }
 
-      // Immediately save non-visible config values to storage
+      // Save non-visible config values directly to storage
       const nonVisibleConfigValues = {};
-
-      // List of all possible config values that are not visible on the install page
       const nonVisibleProps = [
         'errorPageEnabled',
         'autoReloadEnabled',
@@ -216,32 +177,30 @@ document.addEventListener("DOMContentLoaded", () => {
         'autoCloseEnabled'
       ];
 
-      // Add any non-visible config values from the imported JSON to the object to be saved
       nonVisibleProps.forEach(prop => {
         if (config[prop] !== undefined) {
           nonVisibleConfigValues[prop] = config[prop];
         }
       });
 
-      // If there are any non-visible config values, save them immediately
       if (Object.keys(nonVisibleConfigValues).length > 0) {
         browser.storage.local.set(nonVisibleConfigValues);
       }
 
-      // Handle passwordSaverDarkMode separately as it's stored in sync storage
+      // Handle sync storage settings
       if (config.passwordSaverDarkMode !== undefined) {
         browser.storage.sync.set({ passwordSaverDarkMode: config.passwordSaverDarkMode });
       }
 
-      // Close the modal
       importJsonModal.style.display = "none";
-
     } catch (error) {
       modalErrorMessage.textContent = `Invalid JSON configuration: ${error.message}`;
     }
   });
 
-  // Handle form submission
+  /**
+   * Handle form submission and save configuration
+   */
   setupForm.addEventListener("submit", (e) => {
     e.preventDefault();
     errorMessage.textContent = "";
@@ -256,6 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Validate and parse Jenkins mappings
     if (jenkinsMappingsInput.value.trim()) {
       try {
         const preprocessedJson = preprocessJson(jenkinsMappingsInput.value);
@@ -279,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Validate and parse auto-close URLs
     if (autoCloseUrlsInput.value.trim()) {
       try {
         const preprocessedJson = preprocessJson(autoCloseUrlsInput.value);
@@ -299,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Save configuration and close setup page
     browser.storage.local.set({
       jenkinsUrl: jenkinsUrl,
       ghRepoMappings: jenkinsMappings,

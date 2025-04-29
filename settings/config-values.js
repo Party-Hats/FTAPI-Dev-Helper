@@ -1,22 +1,21 @@
-// Ensure browser API is available
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
+/**
+ * Configuration values display script
+ * Shows the complete configuration for the extension
+ */
 
-// Function to update the UI with config values
+/**
+ * Updates the UI with configuration values from storage
+ */
 function updateConfigValues() {
   const allConfigValue = document.getElementById("all-config-value");
 
-  // Make sure element exists before trying to update it
   if (allConfigValue) {
     try {
-      // Set a timeout to handle the case where the storage API doesn't respond
       const timeoutId = setTimeout(function() {
         console.warn("Storage retrieval timed out - using fallback values");
         allConfigValue.textContent = "Storage API timeout - check extension permissions";
-      }, 2000); // 2 second timeout
+      }, 2000);
 
-      // Load and display the configuration values
       browser.storage.local.get([
         "jenkinsUrl", 
         "ghRepoMappings", 
@@ -29,35 +28,31 @@ function updateConfigValues() {
         "autoCloseDelay",
         "autoCloseUrls"
       ], function(localItems) {
-        // Get sync storage items
         browser.storage.sync.get(["passwordSaverDarkMode"], function(syncItems) {
-          // Clear the timeout since we got a response
           clearTimeout(timeoutId);
 
           console.log("Retrieved local storage items:", localItems);
           console.log("Retrieved sync storage items:", syncItems);
 
-          // Create a complete config object
           const allConfig = {
             // Local storage items
             jenkinsUrl: localItems.jenkinsUrl || "",
             ghRepoMappings: Array.isArray(localItems.ghRepoMappings) ? localItems.ghRepoMappings : [],
-            errorPageEnabled: localItems.errorPageEnabled !== false, // Default to true
-            autoReloadEnabled: !!localItems.autoReloadEnabled, // Default to false
-            errorPageDarkMode: !!localItems.errorPageDarkMode, // Default to false
-            githubButtonEnabled: localItems.githubButtonEnabled !== false, // Default to true
-            passwordSaverEnabled: localItems.passwordSaverEnabled !== false, // Default to true
+            errorPageEnabled: localItems.errorPageEnabled !== false, 
+            autoReloadEnabled: !!localItems.autoReloadEnabled, 
+            errorPageDarkMode: !!localItems.errorPageDarkMode, 
+            githubButtonEnabled: localItems.githubButtonEnabled !== false, 
+            passwordSaverEnabled: localItems.passwordSaverEnabled !== false, 
 
             // Auto-close tabs settings
-            autoCloseEnabled: localItems.autoCloseEnabled !== false, // Default to true
-            autoCloseDelay: localItems.autoCloseDelay || 5000, // Default to 5000ms
+            autoCloseEnabled: localItems.autoCloseEnabled !== false, 
+            autoCloseDelay: localItems.autoCloseDelay || 5000, 
             autoCloseUrls: Array.isArray(localItems.autoCloseUrls) ? localItems.autoCloseUrls : [],
 
             // Sync storage items
-            passwordSaverDarkMode: !!syncItems.passwordSaverDarkMode // Default to false
+            passwordSaverDarkMode: !!syncItems.passwordSaverDarkMode
           };
 
-          // Update All Configuration Values
           allConfigValue.textContent = JSON.stringify(allConfig, null, 2);
         });
       });
@@ -68,13 +63,14 @@ function updateConfigValues() {
   }
 }
 
-// Function to copy text to clipboard
+/**
+ * Copies text to clipboard using a temporary textarea element
+ * @param {string} text - The text to copy
+ * @returns {boolean} Whether the copy operation was successful
+ */
 function copyToClipboard(text) {
-  // Create a temporary textarea element
   const textarea = document.createElement('textarea');
   textarea.value = text;
-
-  // Make the textarea out of viewport
   textarea.style.position = 'fixed';
   textarea.style.left = '-999999px';
   textarea.style.top = '-999999px';
@@ -82,7 +78,6 @@ function copyToClipboard(text) {
   document.body.appendChild(textarea);
   textarea.select();
 
-  // Execute the copy command
   let success = false;
   try {
     success = document.execCommand('copy');
@@ -90,20 +85,16 @@ function copyToClipboard(text) {
     console.error('Failed to copy text: ', err);
   }
 
-  // Remove the temporary element
   document.body.removeChild(textarea);
-
   return success;
 }
 
-// Initialize when DOM is loaded
+/**
+ * Initialize the page when DOM is loaded
+ */
 document.addEventListener("DOMContentLoaded", function() {
-  // Update config values
   updateConfigValues();
 
-  // No individual section copy buttons anymore, only the full config
-
-  // Add event listener for the All Config copy button
   const copyAllConfigButton = document.getElementById('copy-all-config-button');
   if (copyAllConfigButton) {
     copyAllConfigButton.addEventListener('click', function() {
@@ -111,19 +102,16 @@ document.addEventListener("DOMContentLoaded", function() {
       if (allConfigValue) {
         const success = copyToClipboard(allConfigValue.textContent);
 
-        // Provide feedback to the user
         if (success) {
           const originalText = copyAllConfigButton.textContent;
           copyAllConfigButton.textContent = 'Copied!';
 
-          // Reset button text after 2 seconds
           setTimeout(function() {
             copyAllConfigButton.textContent = originalText;
           }, 2000);
         } else {
           copyAllConfigButton.textContent = 'Failed to copy';
 
-          // Reset button text after 2 seconds
           setTimeout(function() {
             copyAllConfigButton.textContent = 'Copy to Clipboard';
           }, 2000);
