@@ -90,6 +90,18 @@ This feature automatically closes specific browser tabs after a few seconds:
 2. This is useful for tabs that are opened by desktop applications like Zoom and Slack, which you don't need to keep open.
 3. You can configure the URL patterns and delay in the extension settings.
 
+### Password Saver
+
+This feature helps developers manage test credentials for development environments:
+
+> ⚠️ **IMPORTANT**: Credentials are stored in plaintext and are NOT secure. This feature only works with the FTAPI local test server (https://testing.ftapi.com:8443) and will not trigger on any other server, thus it should be safe. Still, remember to only use this feature for this local test server and never for production or sensitive accounts.
+
+1. Automatically detects login forms on web pages and optionally captures credentials when submitted.
+2. Offers to save credentials within the extension for future use (stored in plaintext).
+3. When revisiting a login page, displays saved credentials for that site.
+4. Allows one-click login with saved credentials (auto-fills and submits the form).
+5. Provides a management interface to view, edit, and delete saved credentials.
+
 ## Development and Releases
 
 This extension uses GitHub Actions for automated builds and releases:
