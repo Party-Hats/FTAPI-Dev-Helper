@@ -12,35 +12,6 @@ For questions, bugs or requests feel free to contact me directly or create an is
 > ### Browser Compatibility
 > This project is primarily built for Chrome and might work for Firefox/Safari. The extension has been designed with Chrome as the primary target, but includes basic compatibility for Firefox. If you encounter issues with Firefox or Safari, feel free to contribute improvements to enhance cross-browser compatibility.
 
-## Purpose
-
-This extension streamlines common tasks when working on FTAPI projects, such as automatically handling a local SecuTransfer server restart and providing quick access to Jenkins builds for GitHub pull requests.  
-All features can be toggled using the settings page of the extension.
-
-## Features
-
-### SecuTransfer Error Page
-
-When the local SecuTransfer server is offline (e.g., after a restart), Chrome typically displays the default “This site can’t be reached” page.  
-This extension replaces that page with a custom status screen that periodically checks the server’s health endpoint until it becomes available again.  
-Depending on your preferences, it can either reload itself once the server is back or let you manually reload with a click.
-
-### GitHub Pull Request Build Links
-
-This feature allows you to quickly open all related Jenkins builds from a GitHub pull request:
-
-1. When viewing a pull request, a button appears in the top-right corner of the page.
-2. Clicking this button opens all mapped Jenkins job pages for that PR.
-3. Each Jenkins page is monitored and reloaded until the build starts, sparing you from repeated manual refreshing.
-
-### Auto-Close Tabs
-
-This feature automatically closes specific browser tabs after a few seconds:
-
-1. When a tab is opened that matches one of the configured URL patterns, it will be automatically closed after a configurable delay.
-2. This is useful for tabs that are opened by desktop applications like Zoom and Slack, which you don't need to keep open.
-3. You can configure the URL patterns and delay in the extension settings.
-
 ## How to Install
 
 ### From GitHub Releases (Recommended)
@@ -89,6 +60,35 @@ These values must be provided during the installation process. To make it easier
 3. Use the "Import from JSON" button on the setup page to import these values
 
 This approach ensures that sensitive URLs and configurations are not hardcoded in the extension.
+
+## Purpose
+
+This extension streamlines common tasks when working on FTAPI projects, such as automatically handling a local SecuTransfer server restart and providing quick access to Jenkins builds for GitHub pull requests.  
+All features can be toggled using the settings page of the extension.
+
+## Features
+
+### SecuTransfer Error Page
+
+When the local SecuTransfer server is offline (e.g., after a restart), Chrome typically displays the default "This site can't be reached" page.  
+This extension replaces that page with a custom status screen that periodically checks the server's health endpoint until it becomes available again.  
+Depending on your preferences, it can either reload itself once the server is back or let you manually reload with a click.
+
+### GitHub Pull Request Build Links
+
+This feature allows you to quickly open all related Jenkins builds from a GitHub pull request:
+
+1. When viewing a pull request, a button appears in the top-right corner of the page.
+2. Clicking this button opens all mapped Jenkins job pages for that PR.
+3. Each Jenkins page is monitored and reloaded until the build starts, sparing you from repeated manual refreshing.
+
+### Auto-Close Tabs
+
+This feature automatically closes specific browser tabs after a few seconds:
+
+1. When a tab is opened that matches one of the configured URL patterns, it will be automatically closed after a configurable delay.
+2. This is useful for tabs that are opened by desktop applications like Zoom and Slack, which you don't need to keep open.
+3. You can configure the URL patterns and delay in the extension settings.
 
 ## Development and Releases
 
