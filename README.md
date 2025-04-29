@@ -68,7 +68,37 @@ The release process works as follows:
    - Creates a GitHub Release with the packaged extensions
    - Uploads the extensions as release assets
 
-To create a new release:
+### Using the Release Script
+
+The easiest way to create a new release is to use the provided release script:
+
+```bash
+./release.sh
+```
+
+This script will:
+1. Extract the current version from manifest.json
+2. Prompt you for a new version (or automatically increment the minor version if none is provided)
+3. Update the version in manifest.json
+4. Commit the changes
+5. Create and push a tag with the format "v{version}"
+
+The script also supports several options:
+
+```
+Options:
+  -h, --help                 Show this help message
+  -v, --version VERSION      Specify the new version (e.g., 1.1)
+  -m, --minor                Increment the minor version (e.g., 1.0 -> 1.1)
+  -p, --patch                Increment the patch version (e.g., 1.0 -> 1.0.1)
+  -M, --major                Increment the major version (e.g., 1.0 -> 2.0)
+  -n, --no-push              Don't push to remote repository
+  -d, --dry-run              Don't make any changes, just show what would happen
+```
+
+### Manual Release Process
+
+If you prefer to create a release manually:
 1. Update the version in `manifest.json`
 2. Create and push a tag with the format "v{version}": `git tag v{version} && git push origin v{version}`
 
