@@ -62,6 +62,12 @@
     .copy-button:hover {
       background-color: #00401E;
     }
+
+    .all-config-item {
+      margin-top: 30px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -85,6 +91,15 @@
       <div class="config-value-container">
         <div class="config-value" id="mappings-value">Loading...</div>
         <button class="copy-button" id="copy-mappings-button">Copy to Clipboard</button>
+      </div>
+    </div>
+
+    <div class="config-item all-config-item">
+      <div class="config-name">All Configuration Values</div>
+      <div class="config-description">Complete JSON configuration for all extension settings</div>
+      <div class="config-value-container">
+        <div class="config-value" id="all-config-value">Loading...</div>
+        <button class="copy-button" id="copy-all-config-button">Copy to Clipboard</button>
       </div>
     </div>
 

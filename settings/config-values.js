@@ -7,46 +7,79 @@ if (typeof browser === "undefined") {
 function updateConfigValues() {
   const jenkinsUrlValue = document.getElementById("jenkins-url-value");
   const mappingsValue = document.getElementById("mappings-value");
+  const allConfigValue = document.getElementById("all-config-value");
 
   // Make sure elements exist before trying to update them
-  if (jenkinsUrlValue && mappingsValue) {
+  if (jenkinsUrlValue && mappingsValue && allConfigValue) {
     try {
       // Set a timeout to handle the case where the storage API doesn't respond
       const timeoutId = setTimeout(function() {
         console.warn("Storage retrieval timed out - using fallback values");
         jenkinsUrlValue.textContent = "Storage API timeout - check extension permissions";
         mappingsValue.textContent = "Storage API timeout - check extension permissions";
+        allConfigValue.textContent = "Storage API timeout - check extension permissions";
       }, 2000); // 2 second timeout
 
       // Load and display the configuration values
-      browser.storage.local.get(["jenkinsUrl", "ghRepoMappings"], function(items) {
-        // Clear the timeout since we got a response
-        clearTimeout(timeoutId);
+      browser.storage.local.get([
+        "jenkinsUrl", 
+        "ghRepoMappings", 
+        "errorPageEnabled", 
+        "autoReloadEnabled", 
+        "errorPageDarkMode", 
+        "githubButtonEnabled", 
+        "passwordSaverEnabled"
+      ], function(localItems) {
+        // Get sync storage items
+        browser.storage.sync.get(["passwordSaverDarkMode"], function(syncItems) {
+          // Clear the timeout since we got a response
+          clearTimeout(timeoutId);
 
-        console.log("Retrieved storage items:", items);
+          console.log("Retrieved local storage items:", localItems);
+          console.log("Retrieved sync storage items:", syncItems);
 
-        // Update Jenkins URL
-        if (items && items.jenkinsUrl !== undefined) {
-          jenkinsUrlValue.textContent = items.jenkinsUrl || "Not set";
-        } else {
-          jenkinsUrlValue.textContent = "Not set";
-        }
+          // Update Jenkins URL
+          if (localItems && localItems.jenkinsUrl !== undefined) {
+            jenkinsUrlValue.textContent = localItems.jenkinsUrl || "Not set";
+          } else {
+            jenkinsUrlValue.textContent = "Not set";
+          }
 
-        // Update GitHub → Jenkins Mappings
-        if (items && items.ghRepoMappings !== undefined) {
-          if (Array.isArray(items.ghRepoMappings)) {
-            mappingsValue.textContent = JSON.stringify(items.ghRepoMappings, null, 2);
+          // Update GitHub → Jenkins Mappings
+          if (localItems && localItems.ghRepoMappings !== undefined) {
+            if (Array.isArray(localItems.ghRepoMappings)) {
+              mappingsValue.textContent = JSON.stringify(localItems.ghRepoMappings, null, 2);
+            } else {
+              mappingsValue.textContent = "[]";
+            }
           } else {
             mappingsValue.textContent = "[]";
           }
-        } else {
-          mappingsValue.textContent = "[]";
-        }
+
+          // Create a complete config object
+          const allConfig = {
+            // Local storage items
+            jenkinsUrl: localItems.jenkinsUrl || "",
+            ghRepoMappings: Array.isArray(localItems.ghRepoMappings) ? localItems.ghRepoMappings : [],
+            errorPageEnabled: localItems.errorPageEnabled !== false, // Default to true
+            autoReloadEnabled: !!localItems.autoReloadEnabled, // Default to false
+            errorPageDarkMode: !!localItems.errorPageDarkMode, // Default to false
+            githubButtonEnabled: localItems.githubButtonEnabled !== false, // Default to true
+            passwordSaverEnabled: localItems.passwordSaverEnabled !== false, // Default to true
+
+            // Sync storage items
+            passwordSaverDarkMode: !!syncItems.passwordSaverDarkMode // Default to false
+          };
+
+          // Update All Configuration Values
+          allConfigValue.textContent = JSON.stringify(allConfig, null, 2);
+        });
       });
     } catch (error) {
       console.error("Error accessing storage:", error);
       jenkinsUrlValue.textContent = "Error loading value: " + error.message;
       mappingsValue.textContent = "Error loading value: " + error.message;
+      allConfigValue.textContent = "Error loading value: " + error.message;
     }
   }
 }
@@ -136,6 +169,35 @@ document.addEventListener("DOMContentLoaded", function() {
           // Reset button text after 2 seconds
           setTimeout(function() {
             copyJenkinsUrlButton.textContent = 'Copy to Clipboard';
+          }, 2000);
+        }
+      }
+    });
+  }
+
+  // Add event listener for the All Config copy button
+  const copyAllConfigButton = document.getElementById('copy-all-config-button');
+  if (copyAllConfigButton) {
+    copyAllConfigButton.addEventListener('click', function() {
+      const allConfigValue = document.getElementById('all-config-value');
+      if (allConfigValue) {
+        const success = copyToClipboard(allConfigValue.textContent);
+
+        // Provide feedback to the user
+        if (success) {
+          const originalText = copyAllConfigButton.textContent;
+          copyAllConfigButton.textContent = 'Copied!';
+
+          // Reset button text after 2 seconds
+          setTimeout(function() {
+            copyAllConfigButton.textContent = originalText;
+          }, 2000);
+        } else {
+          copyAllConfigButton.textContent = 'Failed to copy';
+
+          // Reset button text after 2 seconds
+          setTimeout(function() {
+            copyAllConfigButton.textContent = 'Copy to Clipboard';
           }, 2000);
         }
       }
