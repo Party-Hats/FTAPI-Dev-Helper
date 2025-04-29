@@ -25,6 +25,14 @@ This feature allows you to quickly open all related Jenkins builds from a GitHub
 2. Clicking this button opens all mapped Jenkins job pages for that PR.
 3. Each Jenkins page is monitored and reloaded until the build starts, sparing you from repeated manual refreshing.
 
+### Auto-Close Tabs
+
+This feature automatically closes specific browser tabs after a few seconds:
+
+1. When a tab is opened that matches one of the configured URL patterns, it will be automatically closed after a configurable delay.
+2. This is useful for tabs that are opened by desktop applications like Zoom and Slack, which you don't need to keep open.
+3. You can configure the URL patterns and delay in the extension settings.
+
 ## How to Install
 
 ### From GitHub Releases (Recommended)
@@ -101,9 +109,3 @@ Options:
 If you prefer to create a release manually:
 1. Update the version in `manifest.json`
 2. Create and push a tag with the format "v{version}": `git tag v{version} && git push origin v{version}`
-
----
-
-For advanced options—such as configuring which Jenkins builds to open or
-how the extension handles server restarts—open the extension’s **Settings**
-page.

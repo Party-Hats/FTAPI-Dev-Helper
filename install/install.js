@@ -68,6 +68,27 @@ function validateConfigJson(config) {
     });
   }
 
+  // Validate auto-close URLs if present
+  if (config.autoCloseUrls !== undefined) {
+    if (!Array.isArray(config.autoCloseUrls)) {
+      throw new Error("autoCloseUrls must be an array");
+    }
+
+    // Validate each URL pattern
+    config.autoCloseUrls.forEach((pattern, index) => {
+      if (typeof pattern !== 'string') {
+        throw new Error(`URL pattern at index ${index} must be a string`);
+      }
+    });
+  }
+
+  // Validate auto-close delay if present
+  if (config.autoCloseDelay !== undefined) {
+    if (typeof config.autoCloseDelay !== 'number' || config.autoCloseDelay < 0) {
+      throw new Error("autoCloseDelay must be a positive number");
+    }
+  }
+
   // Validate boolean values
   const booleanProps = [
     'errorPageEnabled', 
@@ -75,7 +96,8 @@ function validateConfigJson(config) {
     'errorPageDarkMode', 
     'githubButtonEnabled', 
     'passwordSaverEnabled',
-    'passwordSaverDarkMode'
+    'passwordSaverDarkMode',
+    'autoCloseEnabled'
   ];
 
   booleanProps.forEach(prop => {
@@ -91,6 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const setupForm = document.getElementById("setupForm");
   const jenkinsUrlInput = document.getElementById("jenkinsUrl");
   const jenkinsMappingsInput = document.getElementById("jenkinsMappings");
+  const autoCloseUrlsInput = document.getElementById("autoCloseUrls");
+  const autoCloseDelayInput = document.getElementById("autoCloseDelay");
   const errorMessage = document.getElementById("errorMessage");
 
   // Modal elements
@@ -103,13 +127,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalErrorMessage = document.getElementById("modalErrorMessage");
 
   // Load existing values
-  browser.storage.local.get(["jenkinsUrl", "ghRepoMappings"], (items) => {
+  browser.storage.local.get(["jenkinsUrl", "ghRepoMappings", "autoCloseUrls", "autoCloseDelay", "autoCloseEnabled"], (items) => {
     if (items.jenkinsUrl) {
       jenkinsUrlInput.value = items.jenkinsUrl;
     }
 
     if (items.ghRepoMappings && Array.isArray(items.ghRepoMappings) && items.ghRepoMappings.length > 0) {
       jenkinsMappingsInput.value = JSON.stringify(items.ghRepoMappings, null, 2);
+    }
+
+    if (items.autoCloseUrls && Array.isArray(items.autoCloseUrls) && items.autoCloseUrls.length > 0) {
+      autoCloseUrlsInput.value = JSON.stringify(items.autoCloseUrls, null, 2);
+    }
+
+    if (items.autoCloseDelay) {
+      autoCloseDelayInput.value = items.autoCloseDelay;
     }
   });
 
@@ -163,6 +195,14 @@ document.addEventListener("DOMContentLoaded", () => {
         jenkinsMappingsInput.value = JSON.stringify(config.ghRepoMappings, null, 2);
       }
 
+      if (config.autoCloseUrls !== undefined) {
+        autoCloseUrlsInput.value = JSON.stringify(config.autoCloseUrls, null, 2);
+      }
+
+      if (config.autoCloseDelay !== undefined) {
+        autoCloseDelayInput.value = config.autoCloseDelay;
+      }
+
       // Immediately save non-visible config values to storage
       const nonVisibleConfigValues = {};
 
@@ -172,7 +212,8 @@ document.addEventListener("DOMContentLoaded", () => {
         'autoReloadEnabled',
         'errorPageDarkMode',
         'githubButtonEnabled',
-        'passwordSaverEnabled'
+        'passwordSaverEnabled',
+        'autoCloseEnabled'
       ];
 
       // Add any non-visible config values from the imported JSON to the object to be saved
@@ -207,6 +248,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const jenkinsUrl = sanitizeJenkinsUrl(jenkinsUrlInput.value);
     let jenkinsMappings = [];
+    let autoCloseUrls = [];
+    let autoCloseDelay = parseInt(autoCloseDelayInput.value) || 5000;
 
     if (!jenkinsUrl) {
       errorMessage.textContent = "Jenkins URL is required.";
@@ -231,7 +274,27 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       } catch (error) {
-        errorMessage.textContent = `Invalid JSON format: ${error.message}`;
+        errorMessage.textContent = `Invalid JSON format for Jenkins mappings: ${error.message}`;
+        return;
+      }
+    }
+
+    if (autoCloseUrlsInput.value.trim()) {
+      try {
+        const preprocessedJson = preprocessJson(autoCloseUrlsInput.value);
+        autoCloseUrls = JSON.parse(preprocessedJson);
+
+        if (!Array.isArray(autoCloseUrls)) {
+          throw new Error("Auto-close URLs must be an array.");
+        }
+
+        autoCloseUrls.forEach((url, index) => {
+          if (typeof url !== 'string') {
+            throw new Error(`URL at index ${index} must be a string.`);
+          }
+        });
+      } catch (error) {
+        errorMessage.textContent = `Invalid JSON format for auto-close URLs: ${error.message}`;
         return;
       }
     }
@@ -239,6 +302,9 @@ document.addEventListener("DOMContentLoaded", () => {
     browser.storage.local.set({
       jenkinsUrl: jenkinsUrl,
       ghRepoMappings: jenkinsMappings,
+      autoCloseUrls: autoCloseUrls,
+      autoCloseDelay: autoCloseDelay,
+      autoCloseEnabled: true,
       setupCompleted: true
     }, () => {
       browser.tabs.getCurrent((tab) => {

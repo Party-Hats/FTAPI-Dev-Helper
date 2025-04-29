@@ -168,6 +168,21 @@
         <p>This is the JSON configuration for mapping GitHub repositories to Jenkins jobs. You can leave this empty if you're not sure.</p>
       </div>
 
+      <div>
+        <label for="autoCloseUrls">Auto-Close URLs (JSON):</label>
+        <textarea id="autoCloseUrls" placeholder='[
+  "zoom.us/j/",
+  "slack.com/signin"
+]'></textarea>
+        <p>This is a list of URL patterns that should be automatically closed after a few seconds. This is useful for tabs that are opened by desktop applications like Zoom and Slack.</p>
+      </div>
+
+      <div>
+        <label for="autoCloseDelay">Auto-Close Delay (milliseconds):</label>
+        <input type="number" id="autoCloseDelay" placeholder="5000" min="1000" step="1000" value="5000">
+        <p>The delay in milliseconds before automatically closing tabs that match the auto-close URL patterns. Default is 5000 (5 seconds).</p>
+      </div>
+
       <button type="submit" id="saveButton">Save and Continue</button>
     </form>
   </div>

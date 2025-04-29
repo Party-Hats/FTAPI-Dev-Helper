@@ -18,8 +18,29 @@
   ],
 
   "background": {
-    "service_worker": "SecuTransferErrorPage/background.js"
+    "service_worker": "background.js"
   },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "shared/polyfill.js",
+        "SecuTransferErrorPage/errorPage.html",
+        "SecuTransferErrorPage/errorPage.js",
+        "SecuTransferErrorPage/errorPage.css",
+        "SecuTransferErrorPage/unavailableDetector.js",
+        "PasswordSaver/passwordSaverContent.css",
+        "PasswordSaver/passwords.html",
+        "PasswordSaver/passwords.css",
+        "PasswordSaver/passwords.js",
+        "install/install.html",
+        "install/install.js",
+        "settings/config-values.js",
+        "AutoCloseTab/autoClose.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
 
   "action": {
     "default_popup": "settings/popup.html",

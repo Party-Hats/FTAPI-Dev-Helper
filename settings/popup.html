@@ -9,15 +9,15 @@
 <h1>Extension Settings</h1>
 
 <!-- Group for Error Page toggles -->
-<div class="settingsGroup">
-  <h2>SecuTransfer Error Page</h2>
+<div class="settingsGroup" title="Shows a custom error page when the local SecuTransfer server is unavailable, with options to auto-reload when it's back online.">
+  <h2 title="Shows a custom error page when the local SecuTransfer server is unavailable, with options to auto-reload when it's back online.">SecuTransfer Error Page</h2>
   <div class="inlineRow">
     <input
         type="checkbox"
         id="errorPageToggle"
         title="Toggle whether to show the custom error page instead of Chrome's default."
     />
-    <label for="errorPageToggle">Enable Custom Error Page</label>
+    <label for="errorPageToggle" title="Toggle whether to show the custom error page instead of Chrome's default.">Enable Custom Error Page</label>
   </div>
   <div class="inlineRow">
     <input
@@ -25,28 +25,29 @@
         id="autoReloadToggle"
         title="If enabled, the error page automatically reloads once the server is back."
     />
-    <label for="autoReloadToggle">Default Auto Reload</label>
+    <label for="autoReloadToggle" title="If enabled, the error page automatically reloads once the server is back.">Default Auto Reload</label>
   </div>
   <div class="inlineRow">
     <input
         type="checkbox"
         id="errorPageDarkMode"
+        title="Enable dark mode for the error page."
     />
-    <label for="errorPageDarkMode">Dark Mode</label>
+    <label for="errorPageDarkMode" title="Enable dark mode for the error page.">Dark Mode</label>
   </div>
 
 </div>
 
 <!-- New Dev Password Saver setting -->
-<div class="settingsGroup">
-  <h2>Dev Password Saver</h2>
+<div class="settingsGroup" title="Saves and manages development passwords for easy access during testing.">
+  <h2 title="Saves and manages development passwords for easy access during testing.">Dev Password Saver</h2>
   <div class="inlineRow">
     <input
         type="checkbox"
         id="passwordSaverEnabled"
         title="Toggle the password saver feature."
     />
-    <label for="passwordSaverEnabled">Enable Password Saver</label>
+    <label for="passwordSaverEnabled" title="Toggle the password saver feature.">Enable Password Saver</label>
   </div>
   <div class="inlineRow">
     <input
@@ -54,28 +55,79 @@
         id="passwordSaverDarkMode"
         title="Toggle dark mode for the password saver popup."
     />
-    <label for="passwordSaverDarkMode">Dark Mode</label>
+    <label for="passwordSaverDarkMode" title="Toggle dark mode for the password saver popup.">Dark Mode</label>
   </div>
   <button
       id="managePasswordsBtn"
-      class="resetMappingsBtn">
+      class="resetMappingsBtn"
+      title="Open the password management page to view, add, or delete saved passwords.">
   Manage Saved Passwords
   </button>
 </div>
 
+<!-- Auto-Close Tabs setting -->
+<div class="settingsGroup" title="Automatically closes specific browser tabs after a configurable delay, useful for tabs opened by desktop applications like Zoom and Slack.">
+  <h2 title="Automatically closes specific browser tabs after a configurable delay, useful for tabs opened by desktop applications like Zoom and Slack.">Auto-Close Tabs</h2>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="autoCloseEnabled"
+        title="Toggle the auto-close tabs feature."
+    />
+    <label for="autoCloseEnabled" title="Toggle the auto-close tabs feature.">Enable Auto-Close Tabs</label>
+  </div>
+  <div class="autoCloseDelayRow">
+    <label for="autoCloseDelay" title="The delay in milliseconds before automatically closing tabs.">Close Delay (milliseconds):</label>
+    <div class="autoCloseDelayInputGroup">
+      <input
+          type="number"
+          id="autoCloseDelay"
+          class="autoCloseDelayInput"
+          placeholder="5000"
+          min="1000"
+          step="1000"
+          title="The delay in milliseconds before automatically closing tabs."
+      />
+      <button
+          id="saveAutoCloseDelayBtn"
+          class="saveAutoCloseDelayBtn"
+          title="Save the auto-close delay."
+      >
+        Save
+      </button>
+    </div>
+  </div>
+  <div class="autoCloseUrlsRow">
+    <label for="autoCloseUrls" title="URL patterns that should be automatically closed. One pattern per line.">URL Patterns:</label>
+    <textarea
+        id="autoCloseUrls"
+        class="autoCloseUrlsInput"
+        placeholder="Enter one URL pattern per line"
+        title="URL patterns that should be automatically closed. One pattern per line."
+    ></textarea>
+    <button
+        id="saveAutoCloseUrlsBtn"
+        class="saveAutoCloseUrlsBtn"
+        title="Save the auto-close URL patterns."
+    >
+      Save URL Patterns
+    </button>
+  </div>
+</div>
+
 <!-- Group for GitHub Button toggle -->
-<div class="settingsGroup">
-  <h2>GitHub Jenkins Button</h2>
+<div class="settingsGroup" title="Adds a button to GitHub pull requests that opens all related Jenkins builds and monitors them until they start.">
+  <h2 title="Adds a button to GitHub pull requests that opens all related Jenkins builds and monitors them until they start.">GitHub Jenkins Button</h2>
   <div class="inlineRow">
     <input
         type="checkbox"
         id="githubButtonEnabled"
         title="Toggle the GitHub button for opening Jenkins pipelines."
     />
-    <label for="githubButtonEnabled">Enable GitHub Button</label>
+    <label for="githubButtonEnabled" title="Toggle the GitHub button for opening Jenkins pipelines.">Enable GitHub Button</label>
   </div>
   <div class="jenkinsUrlRow">
-    <label for="jenkinsUrl">Jenkins URL:</label>
+    <label for="jenkinsUrl" title="The base URL for your Jenkins instance.">Jenkins URL:</label>
     <div class="jenkinsUrlInputGroup">
       <input
           type="text"
@@ -96,8 +148,8 @@
 </div>
 
 <!-- GitHub Jenkins Mappings -->
-<div class="settingsGroup">
-  <h2>GitHub → Jenkins Mappings</h2>
+<div class="settingsGroup" title="Configure mappings between GitHub repositories and Jenkins jobs for the GitHub Jenkins Button feature.">
+  <h2 title="Configure mappings between GitHub repositories and Jenkins jobs for the GitHub Jenkins Button feature.">GitHub → Jenkins Mappings</h2>
   <div class="resetMappingTopRow">
     <button
         id="resetMappingsBtn"
@@ -113,6 +165,7 @@
         type="text"
         id="newRepoName"
         placeholder="Repo Name (e.g. Process-Client)"
+        title="Enter the name of the GitHub repository (e.g. Process-Client)"
     />
     <button
         id="addRepoBtn"
@@ -124,8 +177,8 @@
 </div>
 
 <!-- Global Settings Controls -->
-<div class="settingsGroup">
-  <h2>Global Settings</h2>
+<div class="settingsGroup" title="Global configuration options for the extension.">
+  <h2 title="Global configuration options for the extension.">Global Settings</h2>
   <div class="globalButtonsRow">
     <button
         id="viewConfigBtn"

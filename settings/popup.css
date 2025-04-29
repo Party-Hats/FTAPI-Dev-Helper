@@ -236,3 +236,62 @@ button:hover {
 .saveJenkinsUrlBtn {
   white-space: nowrap;
 }
+
+/* Auto-close tabs styles */
+.autoCloseDelayRow {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.autoCloseDelayRow label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.autoCloseDelayInputGroup {
+  display: flex;
+  align-items: center;
+}
+
+.autoCloseDelayInput {
+  flex: 1;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
+.saveAutoCloseDelayBtn {
+  white-space: nowrap;
+}
+
+.autoCloseUrlsRow {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.autoCloseUrlsRow label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.autoCloseUrlsInput {
+  width: 100%;
+  height: 100px;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  font-family: monospace;
+}
+
+.saveAutoCloseUrlsBtn {
+  display: block;
+  margin-left: auto;
+  white-space: nowrap;
+  max-width: none;
+}

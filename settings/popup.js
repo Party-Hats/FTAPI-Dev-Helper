@@ -13,6 +13,12 @@ const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
 const managePasswordsBtn = document.getElementById("managePasswordsBtn");
 const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
 
+const autoCloseEnabled = document.getElementById("autoCloseEnabled");
+const autoCloseDelay = document.getElementById("autoCloseDelay");
+const saveAutoCloseDelayBtn = document.getElementById("saveAutoCloseDelayBtn");
+const autoCloseUrls = document.getElementById("autoCloseUrls");
+const saveAutoCloseUrlsBtn = document.getElementById("saveAutoCloseUrlsBtn");
+
 const reposList = document.getElementById("reposList");
 const newRepoName = document.getElementById("newRepoName");
 const addRepoBtn = document.getElementById("addRepoBtn");
@@ -41,7 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "passwordSaverEnabled",
     "passwordSaverDarkMode",
     "ghRepoMappings",
-    "jenkinsUrl"
+    "jenkinsUrl",
+    "autoCloseEnabled",
+    "autoCloseDelay",
+    "autoCloseUrls"
   ], (items) => {
     errorPageToggle.checked = items.errorPageEnabled !== false;
     autoReloadToggle.checked = !!items.autoReloadEnabled;
@@ -58,6 +67,22 @@ document.addEventListener("DOMContentLoaded", () => {
     browser.storage.sync.get(["passwordSaverDarkMode"], (syncItems) => {
       passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
     });
+
+    // Auto-close tabs settings
+    if (items.autoCloseEnabled === undefined) {
+      autoCloseEnabled.checked = true;
+      browser.storage.local.set({ autoCloseEnabled: true });
+    } else {
+      autoCloseEnabled.checked = !!items.autoCloseEnabled;
+    }
+
+    autoCloseDelay.value = items.autoCloseDelay || 5000;
+
+    if (items.autoCloseUrls && Array.isArray(items.autoCloseUrls)) {
+      autoCloseUrls.value = items.autoCloseUrls.join('\n');
+    } else {
+      autoCloseUrls.value = '';
+    }
 
     jenkinsUrlInput.value = items.jenkinsUrl || "";
 
@@ -109,6 +134,22 @@ document.addEventListener("DOMContentLoaded", () => {
     browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
   });
 
+  // Auto-close tabs event listeners
+  autoCloseEnabled.addEventListener("change", () => {
+    browser.storage.local.set({ autoCloseEnabled: autoCloseEnabled.checked });
+  });
+
+  saveAutoCloseDelayBtn.addEventListener("click", () => {
+    const delay = parseInt(autoCloseDelay.value) || 5000;
+    browser.storage.local.set({ autoCloseDelay: delay });
+  });
+
+  saveAutoCloseUrlsBtn.addEventListener("click", () => {
+    const urlsText = autoCloseUrls.value.trim();
+    const urlsArray = urlsText ? urlsText.split('\n').map(url => url.trim()).filter(url => url) : [];
+    browser.storage.local.set({ autoCloseUrls: urlsArray });
+  });
+
   viewConfigBtn.addEventListener("click", () => {
     const url = browser.runtime.getURL("settings/config-values.html");
     browser.tabs.create({ url });
@@ -124,7 +165,10 @@ document.addEventListener("DOMContentLoaded", () => {
         githubButtonEnabled: true,
         passwordSaverEnabled: true,
         ghRepoMappings: getDefaultMappings(),
-        jenkinsUrl: ""
+        jenkinsUrl: "",
+        autoCloseEnabled: true,
+        autoCloseDelay: 5000,
+        autoCloseUrls: []
       };
 
       // Save default settings to local storage
