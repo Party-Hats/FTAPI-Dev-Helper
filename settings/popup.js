@@ -1,26 +1,31 @@
-// popup.js
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
 
-// Existing toggles
 const errorPageToggle = document.getElementById("errorPageToggle");
 const autoReloadToggle = document.getElementById("autoReloadToggle");
 const errorPageDarkMode = document.getElementById("errorPageDarkMode");
 const githubButtonEnabled = document.getElementById("githubButtonEnabled");
+const jenkinsUrlInput = document.getElementById("jenkinsUrl");
+const saveJenkinsUrlBtn = document.getElementById("saveJenkinsUrlBtn");
 
-// Dev Password Saver
 const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
 const managePasswordsBtn = document.getElementById("managePasswordsBtn");
 const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
 
-// GH->Jenkins mappings controls
 const reposList = document.getElementById("reposList");
 const newRepoName = document.getElementById("newRepoName");
 const addRepoBtn = document.getElementById("addRepoBtn");
 const resetMappingsBtn = document.getElementById("resetMappingsBtn");
 
-// Reuse your existing getDefaultMappings for GH stuff if needed
 function getDefaultMappings() {
-  // Empty to avoid information disclosure
   return [];
+}
+
+function getJenkinsUrl(callback) {
+  browser.storage.local.get(["jenkinsUrl"], (items) => {
+    callback(items.jenkinsUrl || "");
+  });
 }
 
 let ghRepoMappings = [];
@@ -33,29 +38,27 @@ document.addEventListener("DOMContentLoaded", () => {
     "githubButtonEnabled",
     "passwordSaverEnabled",
     "passwordSaverDarkMode",
-    "ghRepoMappings"
+    "ghRepoMappings",
+    "jenkinsUrl"
   ], (items) => {
-    // Error page toggles
     errorPageToggle.checked = items.errorPageEnabled !== false;
     autoReloadToggle.checked = !!items.autoReloadEnabled;
     errorPageDarkMode.checked = !!items.errorPageDarkMode;
     githubButtonEnabled.checked = items.githubButtonEnabled !== false;
 
-    // Dev Password Saver default to true if not set
     if (items.passwordSaverEnabled === undefined) {
-      passwordSaverEnabled.checked = true; // default on
+      passwordSaverEnabled.checked = true;
       browser.storage.local.set({ passwordSaverEnabled: true });
     } else {
       passwordSaverEnabled.checked = !!items.passwordSaverEnabled;
     }
 
-    // Password Saver Dark Mode - load from sync storage
     browser.storage.sync.get(["passwordSaverDarkMode"], (syncItems) => {
       passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
     });
 
+    jenkinsUrlInput.value = items.jenkinsUrl || "";
 
-    // GH Mappings
     if (!Array.isArray(items.ghRepoMappings)) {
       ghRepoMappings = getDefaultMappings();
       browser.storage.local.set({ ghRepoMappings });
@@ -66,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRepoList();
   });
 
-  // Toggle event listeners
   errorPageToggle.addEventListener("change", () => {
     browser.storage.local.set({ errorPageEnabled: errorPageToggle.checked });
   });
@@ -83,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
     browser.storage.local.set({ passwordSaverEnabled: passwordSaverEnabled.checked });
   });
 
-  // Add a new repo
   addRepoBtn.addEventListener("click", () => {
     const repoName = newRepoName.value.trim();
     if (!repoName) return;
@@ -92,21 +93,41 @@ document.addEventListener("DOMContentLoaded", () => {
     saveAndRender();
   });
 
-  // Reset default mappings
   resetMappingsBtn.addEventListener("click", () => {
     ghRepoMappings = getDefaultMappings();
     saveAndRender();
   });
 
-  // Open our password management page
   managePasswordsBtn.addEventListener("click", () => {
     const url = browser.runtime.getURL("PasswordSaver/passwords.html");
     browser.tabs.create({ url });
   });
 
-  // Add dark mode toggle listener
   passwordSaverDarkMode.addEventListener("change", () => {
     browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
+  });
+
+  function sanitizeJenkinsUrl(url) {
+    let sanitizedUrl = url.trim();
+
+    while (sanitizedUrl.endsWith('/')) {
+      sanitizedUrl = sanitizedUrl.slice(0, -1);
+    }
+
+    if (sanitizedUrl && !sanitizedUrl.match(/^https?:\/\//)) {
+      sanitizedUrl = 'https://' + sanitizedUrl;
+    }
+
+    return sanitizedUrl;
+  }
+
+  saveJenkinsUrlBtn.addEventListener("click", () => {
+    const jenkinsUrl = sanitizeJenkinsUrl(jenkinsUrlInput.value);
+    if (jenkinsUrl) {
+      browser.storage.local.set({ jenkinsUrl: jenkinsUrl });
+    } else {
+      alert("Please enter a valid Jenkins URL.");
+    }
   });
 });
 

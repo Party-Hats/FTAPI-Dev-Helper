@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>FTAPI Dev Helper Setup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .setup-container {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 150px;
+      font-family: monospace;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error {
+      color: red;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>FTAPI Dev Helper Setup</h1>
+
+  <div class="setup-container">
+    <p>Welcome to the FTAPI Dev Helper extension! Please provide the following information to complete the setup:</p>
+
+    <div id="errorMessage" class="error"></div>
+
+    <form id="setupForm">
+      <div>
+        <label for="jenkinsUrl">Jenkins URL:</label>
+        <input type="text" id="jenkinsUrl" placeholder="https://jenkins.example.com" required>
+        <p>This is the base URL for your Jenkins instance (e.g., https://jenkins.example.com)</p>
+      </div>
+
+      <div>
+        <label for="jenkinsMappings">Jenkins Mappings (JSON):</label>
+        <textarea id="jenkinsMappings" placeholder='[
+  {
+    "repo": "example-repo",
+    "jobs": [
+      {
+        "name": "Example Job",
+        "urlPrefix": "https://jenkins.example.com/job/example-job/job/PR-"
+      }
+    ]
+  }
+]'></textarea>
+        <p>This is the JSON configuration for mapping GitHub repositories to Jenkins jobs. You can leave this empty if you're not sure.</p>
+      </div>
+
+      <button type="submit" id="saveButton">Save and Continue</button>
+    </form>
+  </div>
+
+  <script src="../shared/polyfill.js"></script>
+  <script src="install.js"></script>
+</body>
+</html>

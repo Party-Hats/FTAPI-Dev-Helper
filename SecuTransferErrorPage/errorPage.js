@@ -1,24 +1,22 @@
-// We'll fetch from: errorPageUrl + "/actuator/health/readiness"
 const STATUS_UP_VALUE = "UP";
 
-// Grab UI elements
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
+
 const urlArea = document.getElementById("urlArea");
 const statusDiv = document.getElementById("statusArea");
 const toggleEl = document.getElementById("autoToggle");
 const reloadBtn = document.getElementById("reloadBtn");
 
-// Elements for tracking offline time
 const offlineTimeEl = document.getElementById("offlineTime");
 const offlineCountEl = document.getElementById("offlineCount");
 
-// Original failing URL
 const urlParams = new URLSearchParams(window.location.search);
 const originalUrl = urlParams.get("originalUrl") || "";
 
-// Display the original URL distinctly
 urlArea.textContent = originalUrl;
 
-// Extract the base URL from the original URL (up to the first path segment)
 let baseUrl = "";
 let statusEndpoint = "";
 
@@ -32,7 +30,6 @@ if (originalUrl) {
   }
 }
 
-// Load user preferences
 browser.storage.local.get(["autoReloadEnabled", "errorPageDarkMode"], (items) => {
   toggleEl.checked = !!items.autoReloadEnabled;
   if (items.errorPageDarkMode) {
@@ -42,19 +39,16 @@ browser.storage.local.get(["autoReloadEnabled", "errorPageDarkMode"], (items) =>
   }
 });
 
-// When user toggles, persist it
 toggleEl.addEventListener("change", () => {
   browser.storage.local.set({
     autoReloadEnabled: toggleEl.checked
   });
 });
 
-// Reload button manually re-navigates to original
 reloadBtn.addEventListener("click", () => {
   window.location = originalUrl;
 });
 
-// Keep track of seconds since the page loaded (offline time)
 let offlineSeconds = 0;
 const offlineTimer = setInterval(() => {
   offlineSeconds++;
@@ -91,5 +85,4 @@ function checkServer() {
   });
 }
 
-// Start polling in a short delay, so we have time to load the storage
 setTimeout(checkServer, 200);

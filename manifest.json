@@ -53,12 +53,13 @@
     },
     {
       "matches": [
-        "https://ci.ftapi.dev/*"
+        "<all_urls>"
       ],
       "js": [
         "shared/polyfill.js",
         "PullRequestButton/jenkins-check.js"
-      ]
+      ],
+      "run_at": "document_idle"
     }
   ],
 
@@ -73,9 +74,13 @@
         "PasswordSaver/passwordSaverContent.css",
         "PasswordSaver/passwords.html",
         "PasswordSaver/passwords.css",
-        "PasswordSaver/passwords.js"
+        "PasswordSaver/passwords.js",
+        "install/install.html",
+        "install/install.js"
       ],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+
+  "options_page": "settings/popup.html"
 }

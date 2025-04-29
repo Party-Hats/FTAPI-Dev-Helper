@@ -1,31 +1,50 @@
-// Content script to detect "This service is currently unavailable" text
-// and redirect to the error page
-
-// Ensure browser polyfill is available
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
-// Function to check if the page contains the unavailable service text
 function checkForUnavailableService() {
-  // Check if the page contains the text "This service is currently unavailable"
   if (document.body && document.body.innerText.includes("This service is currently unavailable")) {
-    // Check if the error page is enabled in settings
     browser.storage.local.get(["errorPageEnabled"], (items) => {
       const isEnabled = items.errorPageEnabled !== false;
-      
+
       if (isEnabled) {
-        // Redirect to the error page with the current URL as the originalUrl parameter
         const errorPageUrl = browser.runtime.getURL("SecuTransferErrorPage/errorPage.html") + 
                             "?originalUrl=" + 
                             encodeURIComponent(window.location.href);
-        
+
         window.location.href = errorPageUrl;
       }
     });
   }
 }
 
-// Run the check when the page loads
-// Use a small delay to ensure the page content is fully loaded
 setTimeout(checkForUnavailableService, 500);
+
+[
+  {
+    repo: "Process-Client",
+    jobs: [
+      {
+        name: "Build",
+        urlPrefix: "https://ci.ftapi.dev/view/Process%20Client/job/Process-Client/view/change-requests/job/PR-"
+      },
+      {
+        name: "E2E",
+        urlPrefix: "https://ci.ftapi.dev/view/Process%20Client/job/Process%20Client%20E2E%20Tests/view/change-requests/job/PR-"
+      }
+    ]
+  },
+  {
+    repo: "Server-Secutransfer",
+    jobs: [
+      {
+        name: "Build",
+        urlPrefix: "https://ci.ftapi.dev/job/SecuTransfer-PR/job/PR-"
+      },
+      {
+        name: "WebUI E2E",
+        urlPrefix: "https://ci.ftapi.dev/job/secutransfer-webui-e2e-branch-pipeline/job/PR-"
+      }
+    ]
+  }
+]

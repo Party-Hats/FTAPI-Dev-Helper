@@ -186,3 +186,33 @@ button:hover {
   justify-content: flex-start;
   margin-bottom: 0.5rem;
 }
+
+/* Jenkins URL styles */
+.jenkinsUrlRow {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.jenkinsUrlRow label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.jenkinsUrlInputGroup {
+  display: flex;
+  align-items: center;
+}
+
+.jenkinsUrlInput {
+  flex: 1;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
+.saveJenkinsUrlBtn {
+  white-space: nowrap;
+}

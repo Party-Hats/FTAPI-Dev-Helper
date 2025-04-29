@@ -1,28 +1,26 @@
-// passwords.js - listing/editing all dev credentials
-
 (function() {
+  if (typeof browser === "undefined") {
+    var browser = chrome;
+  }
   const tableBody = document.getElementById("pwTableBody");
 
-  // Helper function to trim URL to just host and port
   function trimUrl(url) {
     try {
       const urlObj = new URL(url);
-      return urlObj.origin; // Returns protocol + hostname + port
+      return urlObj.origin;
     } catch (e) {
-      return url; // Return original if parsing fails
+      return url;
     }
   }
 
-  // Load devPasswords from storage
   browser.storage.local.get("devPasswords", (items) => {
     const data = items.devPasswords || {};
     populateTable(data);
   });
 
   function populateTable(devPasswords) {
-    tableBody.innerHTML = ""; // clear existing
+    tableBody.innerHTML = "";
 
-    // devPasswords structure: { url: { username: password, ... }, ... }
     Object.entries(devPasswords).forEach(([url, userMap]) => {
       Object.entries(userMap).forEach(([username, password]) => {
         addTableRow(devPasswords, url, username, password);
@@ -33,25 +31,20 @@
   function addTableRow(devPasswords, url, username, password) {
     const tr = document.createElement("tr");
 
-    // URL cell
     const urlTd = document.createElement("td");
     urlTd.textContent = url;
     tr.appendChild(urlTd);
 
-    // Username cell
     const userTd = document.createElement("td");
     userTd.textContent = username;
     tr.appendChild(userTd);
 
-    // Password cell (plaintext)
     const passTd = document.createElement("td");
     passTd.textContent = password;
     tr.appendChild(passTd);
 
-    // Actions
     const actionTd = document.createElement("td");
 
-    // Edit -> turn row into editable mode
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.addEventListener("click", () => {
@@ -59,13 +52,12 @@
     });
     actionTd.appendChild(editBtn);
 
-    // Delete -> remove this credential
     const delBtn = document.createElement("button");
     delBtn.textContent = "Delete";
     delBtn.addEventListener("click", () => {
       delete devPasswords[url][username];
       if (Object.keys(devPasswords[url]).length === 0) {
-        delete devPasswords[url]; // remove entire URL if no more users
+        delete devPasswords[url];
       }
       browser.storage.local.set({ devPasswords }, () => {
         tr.remove();
@@ -78,7 +70,6 @@
   }
 
   function enterEditMode(tr, devPasswords, oldUrl, oldUser, oldPass) {
-    // Clear row cells, replace with inputs
     tr.innerHTML = "";
 
     const urlTd = document.createElement("td");
@@ -109,21 +100,19 @@
       const newUser = userInput.value.trim();
       const newPass = passInput.value;
 
-      // Remove old entry
       if (devPasswords[oldUrl] && devPasswords[oldUrl][oldUser]) {
         delete devPasswords[oldUrl][oldUser];
         if (Object.keys(devPasswords[oldUrl]).length === 0) {
           delete devPasswords[oldUrl];
         }
       }
-      // Add new entry
+
       if (!devPasswords[newUrl]) {
         devPasswords[newUrl] = {};
       }
       devPasswords[newUrl][newUser] = newPass;
 
       browser.storage.local.set({ devPasswords }, () => {
-        // Rebuild table
         rebuildTable(devPasswords);
       });
     });
@@ -132,7 +121,6 @@
     const cancelBtn = document.createElement("button");
     cancelBtn.textContent = "Cancel";
     cancelBtn.addEventListener("click", () => {
-      // revert row
       rebuildTable(devPasswords);
     });
     actionTd.appendChild(cancelBtn);

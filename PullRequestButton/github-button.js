@@ -1,4 +1,8 @@
 (function() {
+  if (typeof browser === "undefined") {
+    var browser = chrome;
+  }
+
   let lastUrl = null;
 
   setInterval(checkUrl, 100);
