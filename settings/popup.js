@@ -17,6 +17,8 @@ const reposList = document.getElementById("reposList");
 const newRepoName = document.getElementById("newRepoName");
 const addRepoBtn = document.getElementById("addRepoBtn");
 const resetMappingsBtn = document.getElementById("resetMappingsBtn");
+const viewConfigBtn = document.getElementById("viewConfigBtn");
+const resetAllBtn = document.getElementById("resetAllBtn");
 
 function getDefaultMappings() {
   return [];
@@ -105,6 +107,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   passwordSaverDarkMode.addEventListener("change", () => {
     browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
+  });
+
+  viewConfigBtn.addEventListener("click", () => {
+    const url = browser.runtime.getURL("settings/config-values.html");
+    browser.tabs.create({ url });
+  });
+
+  resetAllBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset all configurations to default values? This cannot be undone.")) {
+      // Reset all configurations to default values
+      const defaultSettings = {
+        errorPageEnabled: true,
+        autoReloadEnabled: false,
+        errorPageDarkMode: false,
+        githubButtonEnabled: true,
+        passwordSaverEnabled: true,
+        ghRepoMappings: getDefaultMappings(),
+        jenkinsUrl: ""
+      };
+
+      // Save default settings to local storage
+      browser.storage.local.set(defaultSettings, () => {
+        // Reset password saver dark mode in sync storage
+        browser.storage.sync.set({ passwordSaverDarkMode: false }, () => {
+          // Open the install page
+          const installUrl = browser.runtime.getURL("install/install.html");
+          browser.tabs.create({ url: installUrl });
+          // Close the popup
+          window.close();
+        });
+      });
+    }
   });
 
   function sanitizeJenkinsUrl(url) {

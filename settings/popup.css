@@ -59,10 +59,30 @@ button:hover {
 
 /* Exclude the resetMappingsBtn from forced max-width
    so it can expand as needed */
-.resetMappingsBtn {
+.resetMappingsBtn, .configBtn {
   max-width: none;   /* no forced wrapping */
   white-space: nowrap; /* keep text on one line */
   margin-bottom: 0.5rem;
+}
+
+/* Style for the reset all configurations button */
+.resetAllBtn {
+  max-width: none;   /* no forced wrapping */
+  white-space: nowrap; /* keep text on one line */
+  margin-bottom: 0.5rem;
+  background-color: #d9534f; /* Red color for the reset button */
+  color: white;
+}
+
+.resetAllBtn:hover {
+  background-color: #c9302c; /* Darker red on hover */
+}
+
+/* Style for the global buttons row */
+.globalButtonsRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
 }
 
 /* Text input used for the server URL, etc. */

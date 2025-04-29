@@ -2,6 +2,11 @@
   "manifest_version": 3,
   "name": "FTAPI Dev Helper",
   "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
 
   "permissions": [
     "storage",
@@ -17,7 +22,12 @@
   },
 
   "action": {
-    "default_popup": "settings/popup.html"
+    "default_popup": "settings/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
 
   "content_scripts": [
@@ -76,7 +86,8 @@
         "PasswordSaver/passwords.css",
         "PasswordSaver/passwords.js",
         "install/install.html",
-        "install/install.js"
+        "install/install.js",
+        "settings/config-values.js"
       ],
       "matches": ["<all_urls>"]
     }
