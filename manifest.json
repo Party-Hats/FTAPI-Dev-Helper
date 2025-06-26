@@ -30,6 +30,8 @@
         "SecuTransferErrorPage/errorPage.js",
         "SecuTransferErrorPage/errorPage.css",
         "SecuTransferErrorPage/unavailableDetector.js",
+        "SecuTransferAutoRefresh/autoRefresh.js",
+        "SecuTransferAutoRefresh/autoRefresh.css",
         "PasswordSaver/passwordSaverContent.css",
         "PasswordSaver/passwords.html",
         "PasswordSaver/passwords.css",
@@ -60,6 +62,18 @@
       "js": [
         "shared/polyfill.js",
         "SecuTransferErrorPage/unavailableDetector.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://*.ftapi.com/*"
+      ],
+      "js": [
+        "shared/polyfill.js",
+        "SecuTransferAutoRefresh/autoRefresh.js"
+      ],
+      "css": [
+        "SecuTransferAutoRefresh/autoRefresh.css"
       ]
     },
     {

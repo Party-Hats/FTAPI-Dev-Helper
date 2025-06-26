@@ -1,0 +1,154 @@
+/* SecuTransferAutoRefresh popup styling */
+/* Combines elements from passwordSaverContent.css and errorPage.css */
+
+:root {
+  --main: #19853F;
+  --contrast: #00401E;
+  --light: #F3F5F4;
+  --dark: #333333;
+  --error: #ff4c4c;
+}
+
+.st-popup {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  min-width: 260px;
+  max-width: 400px;
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 16px;
+  z-index: 999999;
+  font-family: sans-serif;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.st-popup p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.st-popup .st-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.st-popup .st-url {
+  color: #666666;
+  font-size: 12px;
+  word-break: break-all;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.st-popup .st-status {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.st-popup .st-offline-time {
+  font-size: 12px;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+.st-popup .st-toggle-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.st-popup #autoRefreshToggle {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.st-popup button {
+  cursor: pointer;
+  background-color: var(--main);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.st-popup button:hover {
+  background-color: var(--contrast);
+}
+
+.st-popup button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.st-popup .st-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  color: #666666;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.st-popup .st-close:hover {
+  color: #333333;
+  background: none;
+}
+
+/* Status colors */
+.statusUp {
+  color: var(--main);
+  font-weight: bold;
+}
+
+.statusDown {
+  color: var(--error);
+  font-weight: bold;
+}
+
+/* Dark mode */
+.st-popup.darkMode {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+.st-popup.darkMode .st-url {
+  color: #999999;
+}
+
+.st-popup.darkMode .st-close {
+  color: #ffffff;
+}
+
+.st-popup.darkMode .st-close:hover {
+  color: #ffffff;
+}
+
+.st-popup.darkMode button {
+  background-color: #4CAF50;
+}
+
+.st-popup.darkMode button:hover {
+  background-color: #45a049;
+}
+
+.st-popup.darkMode .statusUp {
+  color: #86f3ae; /* lighter green in dark mode */
+  font-weight: bold;
+}

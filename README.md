@@ -74,6 +74,21 @@ When the local SecuTransfer server is offline (e.g., after a restart), Chrome ty
 This extension replaces that page with a custom status screen that periodically checks the server's health endpoint until it becomes available again.  
 Depending on your preferences, it can either reload itself once the server is back or let you manually reload with a click.
 
+### SecuTransfer Auto Refresh
+
+While browsing SecuTransfer pages, this feature monitors the server's health in the background (checking once per second).  
+If the server goes offline, a small popup appears in the top-right corner of the page showing the server status and time elapsed.  
+When the server comes back online, the page can automatically refresh or wait for manual reload, based on your preferences.
+
+Key features:
+- Non-intrusive popup that doesn't interfere with page content
+- Real-time server status monitoring
+- Configurable auto-refresh option
+- Dark mode support
+- Completely disabled for API endpoints (/api/* and /rest-api/*) to avoid any interference with API calls
+
+This feature complements the SecuTransfer Error Page by providing monitoring while you're actively using the application, rather than only when the server is already down.
+
 ### GitHub Pull Request Build Links
 
 This feature allows you to quickly open all related Jenkins builds from a GitHub pull request:

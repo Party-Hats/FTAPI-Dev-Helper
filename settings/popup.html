@@ -38,6 +38,35 @@
 
 </div>
 
+<!-- Group for Auto Refresh toggles -->
+<div class="settingsGroup" title="Monitors SecuTransfer servers and shows a popup when they go offline, with options to auto-refresh when they're back online.">
+  <h2 title="Monitors SecuTransfer servers and shows a popup when they go offline, with options to auto-refresh when they're back online.">SecuTransfer Auto Refresh</h2>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="autoRefreshToggle"
+        title="Toggle whether to show the auto-refresh popup when a server goes offline."
+    />
+    <label for="autoRefreshToggle" title="Toggle whether to show the auto-refresh popup when a server goes offline.">Enable Auto Refresh</label>
+  </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="autoRefreshEnabledToggle"
+        title="If enabled, the page automatically reloads once the server is back."
+    />
+    <label for="autoRefreshEnabledToggle" title="If enabled, the page automatically reloads once the server is back.">Default Auto Reload</label>
+  </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="autoRefreshDarkMode"
+        title="Enable dark mode for the auto refresh popup."
+    />
+    <label for="autoRefreshDarkMode" title="Enable dark mode for the auto refresh popup.">Dark Mode</label>
+  </div>
+</div>
+
 <!-- New Dev Password Saver setting -->
 <div class="settingsGroup" title="Saves and manages development passwords for easy access during testing.">
   <h2 title="Saves and manages development passwords for easy access during testing.">Dev Password Saver</h2>

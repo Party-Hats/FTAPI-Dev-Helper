@@ -9,6 +9,11 @@ const errorPageToggle = document.getElementById("errorPageToggle");
 const autoReloadToggle = document.getElementById("autoReloadToggle");
 const errorPageDarkMode = document.getElementById("errorPageDarkMode");
 
+// Auto refresh settings
+const autoRefreshToggle = document.getElementById("autoRefreshToggle");
+const autoRefreshEnabledToggle = document.getElementById("autoRefreshEnabledToggle");
+const autoRefreshDarkMode = document.getElementById("autoRefreshDarkMode");
+
 // GitHub button settings
 const githubButtonEnabled = document.getElementById("githubButtonEnabled");
 const jenkinsUrlInput = document.getElementById("jenkinsUrl");
@@ -69,6 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "errorPageEnabled",
     "autoReloadEnabled",
     "errorPageDarkMode",
+    "autoRefreshEnabled",
+    "autoRefreshAutoReloadEnabled",
+    "autoRefreshDarkMode",
     "githubButtonEnabled",
     "passwordSaverEnabled",
     "passwordSaverDarkMode",
@@ -82,6 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
     errorPageToggle.checked = items.errorPageEnabled !== false;
     autoReloadToggle.checked = !!items.autoReloadEnabled;
     errorPageDarkMode.checked = !!items.errorPageDarkMode;
+
+    // Initialize auto refresh settings
+    autoRefreshToggle.checked = items.autoRefreshEnabled !== false;
+    autoRefreshEnabledToggle.checked = !!items.autoRefreshAutoReloadEnabled;
+    autoRefreshDarkMode.checked = !!items.autoRefreshDarkMode;
 
     // Initialize GitHub button settings
     githubButtonEnabled.checked = items.githubButtonEnabled !== false;
@@ -151,6 +164,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   errorPageDarkMode.addEventListener("change", () => {
     browser.storage.local.set({ errorPageDarkMode: errorPageDarkMode.checked });
+  });
+
+  // Set up event listeners for auto refresh settings
+  autoRefreshToggle.addEventListener("change", () => {
+    browser.storage.local.set({ autoRefreshEnabled: autoRefreshToggle.checked });
+  });
+
+  autoRefreshEnabledToggle.addEventListener("change", () => {
+    browser.storage.local.set({ autoRefreshAutoReloadEnabled: autoRefreshEnabledToggle.checked });
+  });
+
+  autoRefreshDarkMode.addEventListener("change", () => {
+    browser.storage.local.set({ autoRefreshDarkMode: autoRefreshDarkMode.checked });
   });
 
   // Set up event listeners for GitHub button settings
@@ -226,6 +252,9 @@ document.addEventListener("DOMContentLoaded", () => {
         errorPageEnabled: true,
         autoReloadEnabled: false,
         errorPageDarkMode: false,
+        autoRefreshEnabled: true,
+        autoRefreshAutoReloadEnabled: true,
+        autoRefreshDarkMode: false,
         githubButtonEnabled: true,
         passwordSaverEnabled: true,
         ghRepoMappings: getDefaultMappings(),
