@@ -26,11 +26,35 @@
       }
     );
   } else {
-    browser.storage.sync.get(["devPasswords", "passwordSaverEnabled"], (items) => {
+    browser.storage.sync.get([
+      "devPasswords", 
+      "passwordSaverEnabled", 
+      "defaultPasswordEntry",
+      "passwordSaverAutoLoginEnabled",
+      "passwordSaverAutoLoginDelay"
+    ], (items) => {
       if (items.passwordSaverEnabled !== false && items.devPasswords) {
         const currentUrl = trimUrl(window.location.href);
         const savedCredentials = items.devPasswords[currentUrl];
-        if (savedCredentials && Object.keys(savedCredentials).length > 0) {
+
+        // Check if we should auto-login with the default entry
+        if (items.passwordSaverAutoLoginEnabled && 
+            items.defaultPasswordEntry && 
+            items.defaultPasswordEntry.url === currentUrl) {
+
+          // Get the auto-login delay (default to 2 seconds)
+          const autoLoginDelay = (items.passwordSaverAutoLoginDelay || 2) * 1000;
+
+          // Start auto-login process
+          startAutoLogin(
+            currentUrl, 
+            items.defaultPasswordEntry.username, 
+            items.defaultPasswordEntry.password, 
+            autoLoginDelay
+          );
+        } 
+        // Otherwise show the regular password selection popup
+        else if (savedCredentials && Object.keys(savedCredentials).length > 0) {
           showSavedPasswords(currentUrl, savedCredentials);
         }
       }
@@ -228,9 +252,140 @@
     browser.storage.sync.set({ devPasswords });
   }
 
-  function showSavedPasswords(url, credentials) {
+  function startAutoLogin(url, username, password, delay) {
     browser.storage.sync.get(["passwordSaverDarkMode"], (items) => {
       const isDarkMode = !!items.passwordSaverDarkMode;
+
+      const container = document.createElement("div");
+      container.className = "ps-popup";
+      if (isDarkMode) {
+        container.classList.add("darkMode");
+      }
+
+      const title = document.createElement("p");
+      title.textContent = "Auto-login in progress";
+      container.appendChild(title);
+
+      const userInfo = document.createElement("div");
+      userInfo.className = "ps-url";
+      userInfo.innerHTML = `Logging in as <strong>${username}</strong> on <strong>${url}</strong>`;
+      container.appendChild(userInfo);
+
+      const message = document.createElement("p");
+      message.textContent = "Click anywhere to cancel";
+      message.style.fontSize = "12px";
+      message.style.marginTop = "8px";
+      container.appendChild(message);
+
+      const bar = document.createElement("div");
+      bar.className = "ps-timeout-bar";
+      container.appendChild(bar);
+
+      bar.style.width = "100%";
+      bar.style.transition = `width ${delay/1000}s linear`;
+
+      document.body.appendChild(container);
+
+      // Set up click handler to cancel auto-login
+      const cancelAutoLogin = () => {
+        clearTimeout(autoLoginTimer);
+        container.remove();
+        document.removeEventListener("click", cancelAutoLogin);
+
+        // Show the regular password selection popup instead
+        browser.storage.sync.get(["devPasswords"], (items) => {
+          if (items.devPasswords) {
+            const savedCredentials = items.devPasswords[url];
+            if (savedCredentials && Object.keys(savedCredentials).length > 0) {
+              showSavedPasswords(url, savedCredentials);
+            }
+          }
+        });
+      };
+
+      document.addEventListener("click", cancelAutoLogin);
+
+      // Start the progress bar animation
+      setTimeout(() => {
+        bar.style.width = "0%";
+      }, 50);
+
+      // Set up the auto-login timer
+      const autoLoginTimer = setTimeout(() => {
+        // Remove the click handler and container
+        document.removeEventListener("click", cancelAutoLogin);
+        container.remove();
+
+        // Perform the login
+        const form = document.querySelector('form');
+        if (form) {
+          let usernameInput = document.getElementById('username');
+          let passwordInput = document.getElementById('password');
+
+          if (!usernameInput) {
+            usernameInput = form.querySelector('input[type="text"], input[type="email"]');
+          }
+          if (!passwordInput) {
+            passwordInput = form.querySelector('input[type="password"]');
+          }
+
+          if (usernameInput && passwordInput) {
+            usernameInput.value = username;
+            passwordInput.value = password;
+
+            usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+            usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+            passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+            passwordInput.focus();
+
+            let submitBtn = document.getElementById('login-submit-button');
+
+            if (!submitBtn) {
+              submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+
+              if (!submitBtn) {
+                const buttons = form.querySelectorAll('button');
+                for (const button of buttons) {
+                  const text = button.textContent.toLowerCase();
+                  const id = (button.id || '').toLowerCase();
+                  const className = (button.className || '').toLowerCase();
+
+                  if (text.includes('login') || text.includes('sign in') || 
+                      id.includes('login') || id.includes('signin') || 
+                      className.includes('login') || className.includes('signin')) {
+                    submitBtn = button;
+                    break;
+                  }
+                }
+
+                if (!submitBtn && buttons.length > 0) {
+                  submitBtn = buttons[0];
+                }
+              }
+            }
+
+            if (submitBtn) {
+              submitBtn.click();
+            } else {
+              try {
+                form.submit();
+              } catch (e) {
+                console.log('Failed to submit form:', e);
+              }
+            }
+          }
+        }
+      }, delay);
+    });
+  }
+
+  function showSavedPasswords(url, credentials) {
+    browser.storage.sync.get(["passwordSaverDarkMode", "defaultPasswordEntry"], (items) => {
+      const isDarkMode = !!items.passwordSaverDarkMode;
+      const defaultEntry = items.defaultPasswordEntry || {};
 
       const trimmedUrl = trimUrl(url);
 
@@ -257,13 +412,62 @@
       urlElement.innerHTML = `<strong>${trimmedUrl}</strong>`;
       container.appendChild(urlElement);
 
+      // Add auto-login info if enabled
+      browser.storage.sync.get(["passwordSaverAutoLoginEnabled"], (autoLoginItems) => {
+        if (autoLoginItems.passwordSaverAutoLoginEnabled) {
+          const autoLoginInfo = document.createElement("p");
+          autoLoginInfo.className = "ps-auto-login-info";
+          autoLoginInfo.textContent = "Select a default entry for auto-login";
+          autoLoginInfo.style.fontSize = "12px";
+          autoLoginInfo.style.marginTop = "4px";
+          autoLoginInfo.style.marginBottom = "8px";
+          container.appendChild(autoLoginInfo);
+        }
+      });
+
       const listArea = document.createElement("div");
       listArea.className = "ps-listArea";
       container.appendChild(listArea);
 
       Object.entries(credentials).forEach(([username, password]) => {
+        const credRow = document.createElement("div");
+        credRow.className = "ps-cred-row";
+
+        // Create checkbox for default selection
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "ps-default-checkbox";
+        checkbox.checked = (defaultEntry.url === trimmedUrl && defaultEntry.username === username);
+
+        // Add event listener to handle selection
+        checkbox.addEventListener("change", (e) => {
+          if (e.target.checked) {
+            // Uncheck all other checkboxes
+            document.querySelectorAll(".ps-default-checkbox").forEach(cb => {
+              if (cb !== e.target) {
+                cb.checked = false;
+              }
+            });
+
+            // Save this entry as the default
+            browser.storage.sync.set({
+              defaultPasswordEntry: {
+                url: trimmedUrl,
+                username: username,
+                password: password
+              }
+            });
+          } else {
+            // If unchecked, remove the default entry
+            browser.storage.sync.remove("defaultPasswordEntry");
+          }
+        });
+
+        credRow.appendChild(checkbox);
+
         const credButton = document.createElement("button");
         credButton.textContent = username;
+        credButton.className = "ps-cred-button";
         credButton.addEventListener("click", () => {
           const form = document.querySelector('form');
           if (form) {
@@ -328,7 +532,9 @@
           }
           container.remove();
         });
-        listArea.appendChild(credButton);
+
+        credRow.appendChild(credButton);
+        listArea.appendChild(credRow);
       });
 
       document.body.appendChild(container);

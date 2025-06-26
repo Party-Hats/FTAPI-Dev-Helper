@@ -18,6 +18,9 @@ const saveJenkinsUrlBtn = document.getElementById("saveJenkinsUrlBtn");
 const passwordSaverEnabled = document.getElementById("passwordSaverEnabled");
 const managePasswordsBtn = document.getElementById("managePasswordsBtn");
 const passwordSaverDarkMode = document.getElementById("passwordSaverDarkMode");
+const passwordSaverAutoLoginEnabled = document.getElementById("passwordSaverAutoLoginEnabled");
+const passwordSaverAutoLoginDelay = document.getElementById("passwordSaverAutoLoginDelay");
+const savePasswordSaverAutoLoginDelayBtn = document.getElementById("savePasswordSaverAutoLoginDelayBtn");
 
 // Auto-close tabs settings
 const autoCloseEnabled = document.getElementById("autoCloseEnabled");
@@ -92,8 +95,22 @@ document.addEventListener("DOMContentLoaded", () => {
       passwordSaverEnabled.checked = !!items.passwordSaverEnabled;
     }
 
-    browser.storage.sync.get(["passwordSaverDarkMode"], (syncItems) => {
+    browser.storage.sync.get([
+      "passwordSaverDarkMode", 
+      "passwordSaverAutoLoginEnabled", 
+      "passwordSaverAutoLoginDelay"
+    ], (syncItems) => {
       passwordSaverDarkMode.checked = !!syncItems.passwordSaverDarkMode;
+
+      // Initialize auto-login settings
+      if (syncItems.passwordSaverAutoLoginEnabled === undefined) {
+        passwordSaverAutoLoginEnabled.checked = true;
+        browser.storage.sync.set({ passwordSaverAutoLoginEnabled: true });
+      } else {
+        passwordSaverAutoLoginEnabled.checked = !!syncItems.passwordSaverAutoLoginEnabled;
+      }
+
+      passwordSaverAutoLoginDelay.value = syncItems.passwordSaverAutoLoginDelay || 2;
     });
 
     // Initialize auto-close tabs settings
@@ -148,6 +165,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   passwordSaverDarkMode.addEventListener("change", () => {
     browser.storage.sync.set({ passwordSaverDarkMode: passwordSaverDarkMode.checked });
+  });
+
+  passwordSaverAutoLoginEnabled.addEventListener("change", () => {
+    browser.storage.sync.set({ passwordSaverAutoLoginEnabled: passwordSaverAutoLoginEnabled.checked });
+  });
+
+  savePasswordSaverAutoLoginDelayBtn.addEventListener("click", () => {
+    const delay = parseInt(passwordSaverAutoLoginDelay.value, 10);
+    if (delay >= 1 && delay <= 10) {
+      browser.storage.sync.set({ passwordSaverAutoLoginDelay: delay });
+      showSaveConfirmation(savePasswordSaverAutoLoginDelayBtn);
+    }
   });
 
   managePasswordsBtn.addEventListener("click", () => {
@@ -207,7 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       browser.storage.local.set(defaultSettings, () => {
-        browser.storage.sync.set({ passwordSaverDarkMode: false }, () => {
+        browser.storage.sync.set({ 
+          passwordSaverDarkMode: false,
+          passwordSaverAutoLoginEnabled: true,
+          passwordSaverAutoLoginDelay: 2
+        }, () => {
           const installUrl = browser.runtime.getURL("install/install.html");
           browser.tabs.create({ url: installUrl });
           window.close();

@@ -101,6 +101,8 @@ This feature helps developers manage test credentials for development environmen
 3. When revisiting a login page, displays saved credentials for that site.
 4. Allows one-click login with saved credentials (auto-fills and submits the form).
 5. Provides a management interface to view, edit, and delete saved credentials.
+6. Supports setting a default entry for automatic login with configurable delay.
+7. Features a progress bar with click-to-cancel functionality during auto-login countdown.
 
 ## Development and Releases
 

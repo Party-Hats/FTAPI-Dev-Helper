@@ -57,6 +57,36 @@
     />
     <label for="passwordSaverDarkMode" title="Toggle dark mode for the password saver popup.">Dark Mode</label>
   </div>
+  <div class="inlineRow">
+    <input
+        type="checkbox"
+        id="passwordSaverAutoLoginEnabled"
+        title="Toggle auto-login for the default password entry."
+    />
+    <label for="passwordSaverAutoLoginEnabled" title="Toggle auto-login for the default password entry.">Enable Auto-Login for Default Entry</label>
+  </div>
+  <div class="autoLoginDelayRow">
+    <label for="passwordSaverAutoLoginDelay" title="The delay in seconds before auto-login occurs.">Auto-Login Delay (seconds):</label>
+    <div class="autoLoginDelayInputGroup">
+      <input
+          type="number"
+          id="passwordSaverAutoLoginDelay"
+          class="autoLoginDelayInput"
+          placeholder="2"
+          min="1"
+          max="10"
+          step="1"
+          title="The delay in seconds before auto-login occurs."
+      />
+      <button
+          id="savePasswordSaverAutoLoginDelayBtn"
+          class="saveAutoLoginDelayBtn"
+          title="Save the auto-login delay."
+      >
+        Save
+      </button>
+    </div>
+  </div>
   <button
       id="managePasswordsBtn"
       class="resetMappingsBtn"

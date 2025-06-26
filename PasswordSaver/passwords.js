@@ -31,6 +31,48 @@
   function addTableRow(devPasswords, url, username, password) {
     const tr = document.createElement("tr");
 
+    // Add default checkbox cell
+    const defaultTd = document.createElement("td");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "default-checkbox";
+
+    // Check if this entry is the default
+    browser.storage.sync.get(["defaultPasswordEntry"], (items) => {
+      if (items.defaultPasswordEntry && 
+          items.defaultPasswordEntry.url === url && 
+          items.defaultPasswordEntry.username === username) {
+        checkbox.checked = true;
+      }
+    });
+
+    // Add event listener to handle selection
+    checkbox.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        // Uncheck all other checkboxes
+        document.querySelectorAll(".default-checkbox").forEach(cb => {
+          if (cb !== e.target) {
+            cb.checked = false;
+          }
+        });
+
+        // Save this entry as the default
+        browser.storage.sync.set({
+          defaultPasswordEntry: {
+            url: url,
+            username: username,
+            password: password
+          }
+        });
+      } else {
+        // If unchecked, remove the default entry
+        browser.storage.sync.remove("defaultPasswordEntry");
+      }
+    });
+
+    defaultTd.appendChild(checkbox);
+    tr.appendChild(defaultTd);
+
     const urlTd = document.createElement("td");
     urlTd.textContent = url;
     tr.appendChild(urlTd);
@@ -55,10 +97,19 @@
     const delBtn = document.createElement("button");
     delBtn.textContent = "Delete";
     delBtn.addEventListener("click", () => {
+      // Check if this is the default entry
+      const isDefault = checkbox.checked;
+
       delete devPasswords[url][username];
       if (Object.keys(devPasswords[url]).length === 0) {
         delete devPasswords[url];
       }
+
+      // If this was the default entry, remove it from storage
+      if (isDefault) {
+        browser.storage.sync.remove("defaultPasswordEntry");
+      }
+
       browser.storage.local.set({ devPasswords }, () => {
         tr.remove();
       });
@@ -70,7 +121,24 @@
   }
 
   function enterEditMode(tr, devPasswords, oldUrl, oldUser, oldPass) {
+    // Store the checkbox state before clearing the row
+    let isDefault = false;
+    const checkbox = tr.querySelector(".default-checkbox");
+    if (checkbox) {
+      isDefault = checkbox.checked;
+    }
+
     tr.innerHTML = "";
+
+    // Add default checkbox cell
+    const defaultTd = document.createElement("td");
+    const newCheckbox = document.createElement("input");
+    newCheckbox.type = "checkbox";
+    newCheckbox.className = "default-checkbox";
+    newCheckbox.checked = isDefault;
+    newCheckbox.disabled = true; // Disable during edit mode
+    defaultTd.appendChild(newCheckbox);
+    tr.appendChild(defaultTd);
 
     const urlTd = document.createElement("td");
     const urlInput = document.createElement("input");
@@ -99,6 +167,7 @@
       const newUrl = trimUrl(urlInput.value.trim());
       const newUser = userInput.value.trim();
       const newPass = passInput.value;
+      const wasDefault = newCheckbox.checked;
 
       if (devPasswords[oldUrl] && devPasswords[oldUrl][oldUser]) {
         delete devPasswords[oldUrl][oldUser];
@@ -111,6 +180,23 @@
         devPasswords[newUrl] = {};
       }
       devPasswords[newUrl][newUser] = newPass;
+
+      // Update the default entry if this was the default
+      if (wasDefault) {
+        browser.storage.sync.get(["defaultPasswordEntry"], (items) => {
+          if (items.defaultPasswordEntry && 
+              items.defaultPasswordEntry.url === oldUrl && 
+              items.defaultPasswordEntry.username === oldUser) {
+            browser.storage.sync.set({
+              defaultPasswordEntry: {
+                url: newUrl,
+                username: newUser,
+                password: newPass
+              }
+            });
+          }
+        });
+      }
 
       browser.storage.local.set({ devPasswords }, () => {
         rebuildTable(devPasswords);
